@@ -1,14 +1,4 @@
-/*
- Name:    Bluetooth.ino
- Created: 2016/7/30 13:26:47
- Author:  Fing
-HC-06  arduino
-VCC---> 5V
-GND--->GND
-TXD--->D2
-RXD--->D3
-*/
-#include "SoftwareSerial.h"
+  #include "SoftwareSerial.h"
 // Using software serial port, can speak digital port analog into serial port
 SoftwareSerial BT(2, 3);  //New object, receive foot 2, send foot 3
 char val;  //Store received variables
@@ -26,16 +16,20 @@ void setup() {
  
 void loop() {
   //Bluetooth to Serial, write all commands here to Serial
-  if (Serial.available()) {
+  while (Serial.available()) {
+    if (cmd == "") {
+      delay(20);
+    }
     val = Serial.read();
     cmd += val;
-  } else if (cmd != "") {
+  }
+  if (cmd != "") {
     BT.write(cmd.c_str());
     Serial.write(cmd.c_str());
-    if (cmd =="1"){
+    if (cmd =="on"){
      digitalWrite(LED_BUILTIN, HIGH);
     }
-    else if (cmd =="0"){
+    else if (cmd =="off"){
      digitalWrite(LED_BUILTIN, LOW); 
     }       
     Serial.println(": SERIAL SENT");
