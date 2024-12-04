@@ -13,11 +13,16 @@ void setup() {
   initServoControl();
 }
 
+int readColorSensor() {
+  getLastColor();
+}
+
+
 void loop() {
   // Task: Read the color sensor at intervals
   if (millis() - previousTime >= samplingInterval) {
     previousTime = millis();
-    int color = readColorSensor(); // Get the identified color
+    int color = getLastColor(); // Get the identified color
     handleColorDetection(color);  // Handle servo actions based on the detected color
   }
 

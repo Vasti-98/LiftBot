@@ -1,144 +1,152 @@
-/*********
-  Based on project by Rui Santos
-  Complete baseline project details at https://randomnerdtutorials.com  
+/* Adopted from Frank Milburn, originally written 7 August 2015
+ * 
+ * https://github.com/fmilburn3/TCS3200_colorSensor/blob/master/TCS3200_colorSensor.ico
+ * 
+ * Added on by Cheyenne Arnold for EE149 @ UC Berkeley, Dec 4 2024
+ */
+ 
 
-  Modified by Cheyenne Arnold
-*********/
+#include <msp432.h>
 
-// TCS230 or TCS3200 pins wiring to Arduino
-#define S0 4
-#define S1 5
-#define S2 6
-#define S3 7
-#define sensorOut 8
-#define deltaMax 40
-#define PERIOD 10
-#include <stdio.h>
-#include <stdlib.h>
 
-// Stores frequency read by the photodiodes
-int redFrequency = 0;
-int greenFrequency = 0;
-int blueFrequency = 0;
-int redColor = 0;
-int greenColor = 0;
-int blueColor = 0;
-int colors[] = {};
-String colorNames[] = {"Red", "Green", "Blue"};
-int i;
-bool delta(int red, int green, int blue) {
-  return (abs(red - blue) < deltaMax && abs(blue - green) < deltaMax && abs(red - green) < deltaMax);
-}
+// pin declarations
+int outPin = 10;
+int S2 = 8;
+int S3 = 9;
+int OEPin = 11;
+int S1 = 12;
+int S0 = 13;
+int RED = 1;
+int GREEN = 2;
+int BLUE = 3;
+volatile int lastColor = 0;
 
-void setup() {
-  // Setting the outputs
- // pinMode(S0, OUTPUT);
- // pinMode(S1, OUTPUT);
-  pinMode(S2, OUTPUT);
-  pinMode(S3, OUTPUT);
-  
-  // Setting the sensorOut as an input
-  pinMode(sensorOut, INPUT);
-  
-  // Setting frequency scaling to 20%: Pins shorted to 5V and GND to simplify harnessing
-//  digitalWrite(S0,HIGH);
-//  digitalWrite(S1,LOW);
-  
-   // Begins serial communication 
-  Serial.begin(9600);
-}
-void loop() {
-  // Setting RED (R) filtered photodiodes to be read
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,LOW);
-  // Reading the output frequency
-  redFrequency = pulseIn(sensorOut, LOW);
-  // redColor = map(redFrequency, 60, 200, 255, 0);
-   // Printing the RED (R) value
-  
-  Serial.print("R = ");
-  Serial.print(redFrequency);
-  //Serial.print(redColor);
-  
+// constants - adjust if getting poor readings
+const int Rc = 100;                      // Clear Relative Responsivity 
+const int Rr = 99;                       // Red Relative Responsivity 
+const int Rg = 55;                       // Green Relative Responsivity 
+const int Rb = 70;                       // Blue Relative Responsivity 
 
-  // Setting GREEN (G) filtered photodiodes to be read
-  digitalWrite(S2,HIGH);
-  digitalWrite(S3,HIGH);
-  
-  // Reading the output frequency
-  greenFrequency = pulseIn(sensorOut, LOW);
-  greenColor = map(greenFrequency, 40, 250, 255, 0);
-  // Printing the GREEN (G) value  
-  
-  Serial.print(" G = ");
-  Serial.print(greenFrequency);
-  //Serial.print(greenColor);
-  
-  // Setting BLUE (B) filtered photodiodes to be read
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,HIGH);
-  
-  // Reading the output frequency
-  blueFrequency = pulseIn(sensorOut, LOW);
-  blueColor = map(blueFrequency, 90, 180, 255, 0);
-  // Printing the BLUE (B) value 
-  
-  Serial.print(" B = ");
-  Serial.println(blueFrequency);
-  //Serial.println(blueColor);
-  delay(100);
-  
-  colors[0] = redColor;
-  colors[1] = greenColor;
-  colors[2] = blueColor;
 
-  if (delta(redFrequency, greenFrequency, blueFrequency)) {
-    Serial.println("Nothing Detected");
-  } else { 
-    //delay in ms, samples 100/period times
-    Serial.print("Sampling: ");
-    Serial.println(100/PERIOD);
-    int countT = 0;
-    int countF = 0;
-    for (int i = 0; i < 100/PERIOD; i++){
-      delay(1000/(3*PERIOD));
-      digitalWrite(S2,LOW);
-      digitalWrite(S3,LOW);
-      int red1 = pulseIn(sensorOut, LOW);
-      delay(1000/(3*PERIOD));
-      digitalWrite(S3,HIGH);
-      int blue1 = pulseIn(sensorOut, LOW);
-      delay(1000/(3*PERIOD));
-      digitalWrite(S2,HIGH);
-      digitalWrite(S3,HIGH);
-      int green1 = pulseIn(sensorOut, LOW);
-      if (delta(red1, green1, blue1)) {
-        Serial.print("F");
-        countF++;
-      } else {
-        Serial.print("T");
-        countT++;
-      }
+int getLastColor(){return lastColor;}
+
+const int delta = 500;
+  int maxDelta(int rF, int gF, int bF) {
+    if (abs(rF - gF) > delta) {
+      if (rF < gF){
+          return RED;
+        } else {
+          return GREEN;
+        }
     }
-    Serial.println(" ");
-    if (countT > .7*(100/PERIOD)) {
-      Serial.println("SamplePassed");
+    if (abs(rF - bF) > delta) {
+      if (rF < bF) {
+        return RED;
     } else {
-      Serial.println("SampleFailed");
-    }
-  }
-/*
-  if (blueColor < 0 && redColor < 0 && greenColor < 0) {
-    Serial.println("No color found");
-  } else {
-    for (i = 0; i < 3; i++) {
-      if (colors[i] > 0) {
-        Serial.print(colorNames[i]);
-        Serial.print(" ");
+      return BLUE;
       }
     }
-      Serial.println(" ");
-    
+    if (abs(gF - bF) > delta){
+      if (gF < bF) {
+        return GREEN;
+      } else {
+        return BLUE;
+      }
+    }
+    return 0;
   }
-*/
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(outPin, INPUT);               
+  pinMode(OEPin, OUTPUT);
+  digitalWrite(OEPin, LOW);              // Enable frequency scaling
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  digitalWrite(S0, HIGH);                // set frequency scaling of sensor
+  digitalWrite(S1, LOW);                 // set frequency scaling of sensor
+  pinMode(S2, OUTPUT);            
+  pinMode(S3, OUTPUT);            
+  pinMode(RED_LED, OUTPUT);              // R on RGB LED of MSP432
+  pinMode(GREEN_LED, OUTPUT);            // G on RGB LED of MSP432
+  pinMode(BLUE_LED, OUTPUT);             // B on RGB LED of MSP432
+}
+
+void loop()
+{
+  //------------------ Read raw values and correct them ----------------------
+  digitalWrite(S2, HIGH);                // get ready to read clear
+  digitalWrite(S3, LOW);
+  int cPulse = pulseIn(outPin, LOW);     // read clear
+  /*
+  Serial.print("C pulse = ");
+  Serial.println(cPulse);            
+  */
+  int Ac = cPulse * Rc;                  // adjust reading for responsiveness
+  
+  digitalWrite(S2, LOW);                 // get ready to read red
+  digitalWrite(S3, LOW);
+  int rPulse = pulseIn(outPin, LOW);
+  /*// read red    
+  Serial.print("R pulse = ");
+  Serial.println(rPulse);
+  */
+  int Ar = rPulse * Rr;                  // adjust reading for responsiveness
+  int Cr = Ar - Ac;                      // correct for clear reading
+  
+  digitalWrite(S2, HIGH);                // get ready to read green
+  digitalWrite(S3, HIGH);
+  int gPulse = pulseIn(outPin, LOW);     // read green
+  /*
+  Serial.print("G pulse = ");
+  Serial.println(gPulse);
+  */
+  int Ag = gPulse * Rg;                  // adjust reading for responsiveness                  
+  int Cg = Ag - Ac;                      // correct for clear reading
+    
+  digitalWrite(S2, LOW);                 // get ready to read blue
+  digitalWrite(S3, HIGH);
+  int bPulse = pulseIn(outPin, LOW);     // read blue
+  /*
+  Serial.print("B pulse = ");
+  Serial.println(bPulse);
+  */
+  int Ab = bPulse * Rb;                  // adjust reading for responsiveness
+  int Cb = Ab - Ac;                      // correct for clear reading
+
+
+  int r;
+  int g;
+  int b;
+  int classify = maxDelta(rPulse, gPulse, bPulse);
+  if (classify != 0) {
+    if (classify == RED) {
+      Serial.println("red");
+      lastColor = RED;
+    } else if (classify == GREEN) {
+      Serial.println("green");
+      lastColor = GREEN;
+    } else {
+      Serial.println("blue");
+      lastColor = BLUE;
+    }
+  } else {
+    Serial.println("No color");
+    lastColor = 0;
+  }
+
+  
+
+  //----------------------------------- Output ------------------------------------
+  /*
+  Serial.println("");
+  Serial.print("r = "); Serial.println(r);
+  Serial.print("g = "); Serial.println(g);
+  Serial.print("b = "); Serial.println(b); 
+  Serial.println(""); 
+  analogWrite(RED_LED, r);
+  analogWrite(GREEN_LED, g);
+  analogWrite(BLUE_LED, b);
+  delay(1000);  
+  */
 }
