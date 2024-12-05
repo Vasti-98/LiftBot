@@ -9,22 +9,42 @@ void setupEncoder(){
   right_m.begin(11, 30,39);
 
   // Print message for debugging
-  left_m.enableMotor();
-  right_m.enableMotor();
-  // Set motor direction to forward
-  /*
-  left_m.directionForward();
-  right_m.directionForward()*/;
-  
-  left_m.setSpeed(150); 
-  right_m.setSpeed(150); 
+//  left_m.enableMotor();
+//  right_m.enableMotor();
+//  // Set motor direction to forward
+//  /*
+//  left_m.directionForward();
+//  right_m.directionForward()*/;
+//  
+//  left_m.setSpeed(150); 
+//  right_m.setSpeed(150); 
   
   resetLeftEncoderCnt(); 
   resetRightEncoderCnt();
 }
 
-void loopEncoder(){
-  //colorValue = getLastColor(); 
+void turnOn(){
+    // Print message for debugging
+  left_m.enableMotor();
+  right_m.enableMotor();
+  left_m.directionForward();
+  right_m.directionForward();
+  left_m.setSpeed(150); 
+  right_m.setSpeed(150); 
+}
+void turnOff(){
+  left_m.disableMotor();
+  right_m.disableMotor(); 
+}
+
+
+
+
+void loopEncoder(){ //orginally: loopEncoder
+  //colorValue = getLastColor()
+  /* 
+    left_m.disableMotor();
+    right_m.disableMotor(); */
 
 
 }

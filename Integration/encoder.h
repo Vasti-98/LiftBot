@@ -28,10 +28,8 @@ void straightNoFeed() {
   right_m.directionForward();
 }
 
-void stopMotors(){
-  left_m.disableMotor();
-  right_m.disableMotor();
-}
+
+
 
 
 void straightFeedback(uint32_t tickR, uint32_t tickL){

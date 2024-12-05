@@ -29,6 +29,8 @@ void pickUpObject() {
   servo_right.writeMicroseconds(highHeight);
 }
 
+
+
 void dropUpObject() {
   gripper.writeMicroseconds(closeGrip); //ensuring gripper is closed, maybe delete 
   servo_right.writeMicroseconds(lowHeight);

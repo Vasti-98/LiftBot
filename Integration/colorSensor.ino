@@ -72,7 +72,7 @@ void setupColor()
   pinMode(BLUE_LED, OUTPUT);             // B on RGB LED of MSP432
 }
 
-void Color(){//this is loopColor()
+void loopColor(){//this is loopColor()
   //------------------ Read raw values and correct them ----------------------
   digitalWrite(S2, HIGH);                // get ready to read clear
   digitalWrite(S3, LOW);
