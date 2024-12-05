@@ -55,7 +55,7 @@ const int delta = 500;
     }
     return 0;
   }
-void setup()
+void setupColor()
 {
   Serial.begin(9600);
   pinMode(outPin, INPUT);               
@@ -72,8 +72,7 @@ void setup()
   pinMode(BLUE_LED, OUTPUT);             // B on RGB LED of MSP432
 }
 
-void loop()
-{
+void loopColor(){ /** ask what this does
   //------------------ Read raw values and correct them ----------------------
   digitalWrite(S2, HIGH);                // get ready to read clear
   digitalWrite(S3, LOW);

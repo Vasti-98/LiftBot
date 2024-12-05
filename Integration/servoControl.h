@@ -1,8 +1,8 @@
 #include <Servo.h>
 
 // Define pins
-const int leftServo = 6;          
-const int rightServo = 7; 
+const int leftServo = 25; //p4.2
+const int rightServo = 28;//p4.7 
 const int feedbackPin = A0;      // Analog pin to read feedback
 
 //payload is 100g 
@@ -18,16 +18,6 @@ const int upTilt = 19000;
 Servo gripper;
 const int openGrip = 500; //open
 const int closeGrip = 2400; // fully clsoed
-
-void initServoControl() {
-  servo_right.attach(rightServo);
-  servo_left.attach(leftServo);
-  gripper.attach(5,openGrip, closeGrip);
-
-}
-
-void handleColorDetection(int color) {
-}
 
 void pickUpObject() {
   gripper.writeMicroseconds(openGrip); //ensuring gripper is one
@@ -46,14 +36,3 @@ void dropUpObject() {
   delay(1000);
   gripper.writeMicroseconds(openGrip);  
 }
-
-
-/*debug
-void loop() {
-  Serial.print("Starting");
-  //1. pick up the ball: 
-  servo_right.writeMicroseconds(lowHeight);
-  servo_right.writeMicroseconds(flatTilt);
-  delay(1000);
-  gripper.writeMicroseconds(openGrip);
-} */
