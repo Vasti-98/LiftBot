@@ -22,7 +22,7 @@ const int closeGrip = 2400; // fully clsoed
 void pickUpObject() {
   gripper.writeMicroseconds(openGrip); //ensuring gripper is one
   servo_right.writeMicroseconds(lowHeight);
-  servo_right.writeMicroseconds(flatTilt);
+  servo_left.writeMicroseconds(flatTilt);
   delay(1000);
   gripper.writeMicroseconds(closeGrip);
   delay(1000);

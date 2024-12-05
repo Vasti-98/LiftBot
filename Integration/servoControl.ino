@@ -7,5 +7,5 @@ void setupServo() {
 }
 
 void loopServo(){
-  
+
 }
