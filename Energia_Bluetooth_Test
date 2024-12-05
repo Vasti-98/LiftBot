@@ -1,0 +1,23 @@
+void setup() {
+  // Debugging via USB Serial
+  Serial.begin(9600);
+
+  // HM-10 UART communication
+  Serial1.begin(9600); // Default HM-10 baud rate is 9600
+
+  Serial.println("HM-10 BLE module initialized");
+}
+
+void loop() {
+  // Send data to the BLE module
+  Serial1.write("Hello from MSP432!");
+
+  // Check for incoming BLE data
+  if (Serial1.available()) {
+    String data = Serial1.readString(); // Read incoming BLE data
+    Serial.print("Received: ");
+    Serial.println(data);
+  }
+
+  delay(1000); // Wait for 1 second
+}
