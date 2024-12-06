@@ -45,6 +45,12 @@ void loop() {
        turnOff();
       digitalWrite(LED_BUILTIN, LOW);
       Serial.println(": COMMAND SENT FROM PHONE: TURN OFF");
+    } else if (strncmp(cmd, "back", strlen("back")) == 0) {
+      turnAround();
+    } else if (strncmp(cmd, "left", strlen("left")) == 0) {
+      turnLeft();
+    } else if (strncmp(cmd, "right", strlen("right")) == 0) {
+      turnRight();
     } else {
       Serial.println(": INVALID COMMAND");
     }
