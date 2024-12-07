@@ -7,7 +7,8 @@ void setupEncoder(){
   //initialize the motors
   left_m.begin(31,29,40);
   right_m.begin(11, 30,39);
-  
+  left_m.enableMotor();
+  right_m.enableMotor();
   resetLeftEncoderCnt(); 
   resetRightEncoderCnt();
 }
@@ -37,18 +38,18 @@ void turnAround(){
 }
 
 void turnLeft(){
-  left_m.directionBackward();
   right_m.directionForward();
-  left_m.setSpeed(150); 
-  right_m.setSpeed(150);
-  delay(250);
-  left_m.disableMotor();
-  right_m.disableMotor();
+  left_m.setSpeed(50); 
+  right_m.setSpeed(0);
+  delay(40);
+  left_m.setSpeed(0); 
+  right_m.setSpeed(0);
+  Serial.println("left");
 }
 
 void turnRight(){
   left_m.directionForward();
-  right_m.directionBackground();
+  right_m.directionBackward();
   left_m.setSpeed(150); 
   right_m.setSpeed(150);
   delay(250);
@@ -62,9 +63,9 @@ void encoderReset(){//resets the encoder need to do
 
 
 void loopEncoder(){ //orginally: loopEncoder
-  //colorValue = getLastColor()
-  /* 
-    left_m.disableMotor();
-    right_m.disableMotor(); */
+  delay(3000);
+  turnLeft();
+  
+  
     
 }

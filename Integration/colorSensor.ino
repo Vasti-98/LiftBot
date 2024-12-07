@@ -120,17 +120,17 @@ void loopColor(){//this is loopColor()
   int classify = maxDelta(rPulse, gPulse, bPulse);
   if (classify != 0) {
     if (classify == RED) {
-      Serial.println("red");
+      //Serial.println("red");
       lastColor = RED;
     } else if (classify == GREEN) {
-      Serial.println("green");
+      //Serial.println("green");
       lastColor = GREEN;
     } else {
-      Serial.println("blue");
+      //Serial.println("blue");
       lastColor = BLUE;
     }
   } else {
-    Serial.println("No color");
+    //Serial.println("No color");
     lastColor = 0;
   }
 
