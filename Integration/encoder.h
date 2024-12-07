@@ -73,6 +73,9 @@ void straightFeedback(uint32_t tickR, uint32_t tickL){
 
 void turnR() {
   left_m.setSpeed(150);
+  right_m.setSpeed(-150);
+  delay(2000);
+  left_m.setSpeed(0);
   right_m.setSpeed(0);
 }
 

@@ -7,17 +7,6 @@ void setupEncoder(){
   //initialize the motors
   left_m.begin(31,29,40);
   right_m.begin(11, 30,39);
-
-  // Print message for debugging
-//  left_m.enableMotor();
-//  right_m.enableMotor();
-//  // Set motor direction to forward
-//  /*
-//  left_m.directionForward();
-//  right_m.directionForward()*/;
-//  
-//  left_m.setSpeed(150); 
-//  right_m.setSpeed(150); 
   
   resetLeftEncoderCnt(); 
   resetRightEncoderCnt();
@@ -36,8 +25,10 @@ void turnOff(){
   left_m.disableMotor();
   right_m.disableMotor(); 
 }
+void encoderReset(){//resets the encoder need to do 
 
-
+  
+}
 
 
 void loopEncoder(){ //orginally: loopEncoder
@@ -45,6 +36,5 @@ void loopEncoder(){ //orginally: loopEncoder
   /* 
     left_m.disableMotor();
     right_m.disableMotor(); */
-
-
+    
 }
