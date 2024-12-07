@@ -23,7 +23,37 @@ void turnOn(){
 }
 void turnOff(){
   left_m.disableMotor();
-  right_m.disableMotor(); 
+  right_m.disableMotor();
+}
+
+void turnAround(){
+  left_m.directionBackward();
+  right_m.directionForward();
+  left_m.setSpeed(150); 
+  right_m.setSpeed(150);
+  delay(500);
+  left_m.disableMotor();
+  right_m.disableMotor();
+}
+
+void turnLeft(){
+  left_m.directionBackward();
+  right_m.directionForward();
+  left_m.setSpeed(150); 
+  right_m.setSpeed(150);
+  delay(250);
+  left_m.disableMotor();
+  right_m.disableMotor();
+}
+
+void turnRight(){
+  left_m.directionForward();
+  right_m.directionBackground();
+  left_m.setSpeed(150); 
+  right_m.setSpeed(150);
+  delay(250);
+  left_m.disableMotor();
+  right_m.disableMotor();
 }
 void encoderReset(){//resets the encoder need to do 
 
