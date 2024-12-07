@@ -8,7 +8,10 @@ bool cmdSent = false;
 char cmd2[64] = {0};
 int cmd2Index = 0;
 
-void setup() {
+//
+bool btOn = false; 
+
+void setupBluetooth() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
 
@@ -20,7 +23,7 @@ void setup() {
   Serial1.write("AT"); // Send AT command to HM-10
 }
 
-void loop() {
+void loopBluetooth() {
   // Receive data from HM-10 (Bluetooth)
   while (Serial1.available()) {
     char c = Serial1.read();
@@ -38,19 +41,13 @@ void loop() {
     cmdSent = false;
     Serial.write(cmd);
     if (strncmp(cmd, "on", strlen("on")) == 0) {
-      turnOn();
+      btOn = true; //
       digitalWrite(LED_BUILTIN, HIGH);
       Serial.println(": COMMAND SENT FROM PHONE: TURN ON");
     } else if (strncmp(cmd, "off", strlen("off")) == 0) {
-       turnOff();
+      btOn = false; //
       digitalWrite(LED_BUILTIN, LOW);
       Serial.println(": COMMAND SENT FROM PHONE: TURN OFF");
-    } else if (strncmp(cmd, "back", strlen("back")) == 0) {
-      turnAround();
-    } else if (strncmp(cmd, "left", strlen("left")) == 0) {
-      turnLeft();
-    } else if (strncmp(cmd, "right", strlen("right")) == 0) {
-      turnRight();
     } else {
       Serial.println(": INVALID COMMAND");
     }

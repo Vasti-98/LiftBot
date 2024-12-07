@@ -30,42 +30,36 @@ void turnOff(){
 void turnAround(){
   left_m.directionBackward();
   right_m.directionForward();
-  left_m.setSpeed(150); 
-  right_m.setSpeed(150);
-  delay(500);
-  left_m.disableMotor();
-  right_m.disableMotor();
+  left_m.setSpeed(55); 
+  right_m.setSpeed(55);
+  delay(680);
+  left_m.setSpeed(0); 
+  right_m.setSpeed(0);
 }
 
 void turnLeft(){
+  left_m.directionBackward();
   right_m.directionForward();
-  left_m.setSpeed(50); 
-  right_m.setSpeed(0);
-  delay(40);
+  left_m.setSpeed(55); 
+  right_m.setSpeed(55);
+  delay(340);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
-  Serial.println("left");
 }
 
 void turnRight(){
   left_m.directionForward();
   right_m.directionBackward();
-  left_m.setSpeed(150); 
-  right_m.setSpeed(150);
-  delay(250);
-  left_m.disableMotor();
-  right_m.disableMotor();
+  left_m.setSpeed(55); 
+  right_m.setSpeed(55);
+  delay(340);
+  left_m.setSpeed(0); 
+  right_m.setSpeed(0);
 }
 void encoderReset(){//resets the encoder need to do 
-
-  
 }
 
 
 void loopEncoder(){ //orginally: loopEncoder
-  delay(3000);
-  turnLeft();
   
-  
-    
 }

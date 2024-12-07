@@ -7,17 +7,5 @@ void setupServo() {
 }
 
 void loopServo(){ //orginally:loopServo()
-  /**
-  if(getLastColor() == 1) {
-    Serial.println("identified");
-    gripper.writeMicroseconds(openGrip);
-    
-  } else if (getLastColor() == 0) {
-    Serial.println("NOPE");
-    gripper.writeMicroseconds(1200);
-    servo_right.writeMicroseconds(highHeight);
-    //servo_left.writeMicroseconds(downTilt);
-  } */
-
 
 }
