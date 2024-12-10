@@ -1,5 +1,5 @@
 #include <Servo.h>
-
+/*
 // Define pins
 const int leftServo = 25; //p4.2
 const int rightServo = 23;//p4.7 
@@ -38,3 +38,4 @@ void dropUpObject() {
   delay(1000);
   gripper.writeMicroseconds(openGrip);  
 }
+*/

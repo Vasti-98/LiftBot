@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 unsigned long previousTime = 0;
 
 #define IDLE_STATE 0
@@ -32,6 +33,9 @@ volatile bool returning = true;
 
 
 int handleStateTransition(int currentState, int event) {
+  if (event == BT_STOP_EVENT) {
+    return IDLE_STATE;
+  }
   switch(currentState) {
     case IDLE_STATE:
       if (event == BT_START_EVENT) {
@@ -72,7 +76,9 @@ int handleStateTransition(int currentState, int event) {
           Serial.println("Left line detected, no action taken");
           return currentState;
           }
+          break;
       }
+
       
       if (event == RLINE_DETECTED_EVENT) { //Right line detected while driving
         if ((currentTarget == UNSORTED_BIN && lastTarget == RED_BIN)&& returning) {
@@ -92,12 +98,17 @@ int handleStateTransition(int currentState, int event) {
         } else {
           Serial.println("Right line detected, no action taken");
           }
+          break;
       }
-      break;
-    
-     
-      
-  }
+
+      /*
+      if (event == RED_DETECTED_EVENT && (currentTarget == UNSORTED_BIN && (pastHalf && returning)) {
+        lastTarget = UNSORTED_BIN;
+        currentTarget = RED_BIN;
+        return PICKUP_STATE;
+      }
+      */
+}
 }
 
 
@@ -106,13 +117,14 @@ void setup() {
   Serial.begin(9600);
 }
 
-int readColorSensor() {
-  getLastColor(); //what does
-}
 
 
 void loop() {
-  turnOn();
   Serial.println("running");
+  /*
+  pickUpObject();
+  delay(1000);
+  dropUpObject();
+  */
 
 }

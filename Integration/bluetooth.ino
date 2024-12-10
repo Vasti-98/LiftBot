@@ -23,7 +23,7 @@ void setupBluetooth() {
   Serial1.write("AT"); // Send AT command to HM-10
 }
 
-void loopBluetooth() {
+void loop() {
   // Receive data from HM-10 (Bluetooth)
   while (Serial1.available()) {
     char c = Serial1.read();

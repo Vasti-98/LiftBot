@@ -26,9 +26,69 @@ const int Rc = 100;                      // Clear Relative Responsivity
 const int Rr = 99;                       // Red Relative Responsivity 
 const int Rg = 55;                       // Green Relative Responsivity 
 const int Rb = 70;                       // Blue Relative Responsivity 
+volatile bool printy = false;
+
+int getLastColor(){
+  
+  digitalWrite(S2, HIGH);                // get ready to read clear
+  digitalWrite(S3, LOW);
+  int cPulse = pulseIn(outPin, LOW);     // read clear
+  if (printy) {
+  Serial.print("C pulse = ");
+  Serial.println(cPulse);            
+  }
+  int Ac = cPulse * Rc;                  // adjust reading for responsiveness
+  
+  digitalWrite(S2, LOW);                 // get ready to read red
+  digitalWrite(S3, LOW);
+  int rPulse = pulseIn(outPin, LOW);
+  if (printy) {    
+  Serial.print("R pulse = ");
+  Serial.println(rPulse);
+  }
+  int Ar = rPulse * Rr;                  // adjust reading for responsiveness
+  int Cr = Ar - Ac;                      // correct for clear reading
+  
+  digitalWrite(S2, HIGH);                // get ready to read green
+  digitalWrite(S3, HIGH);
+  int gPulse = pulseIn(outPin, LOW);     // read green
+  if (printy) {
+  Serial.print("G pulse = ");
+  Serial.println(gPulse);
+  }
+  int Ag = gPulse * Rg;                  // adjust reading for responsiveness                  
+  int Cg = Ag - Ac;                      // correct for clear reading
+    
+  digitalWrite(S2, LOW);                 // get ready to read blue
+  digitalWrite(S3, HIGH);
+  int bPulse = pulseIn(outPin, LOW);     // read blue
+  if (printy) {
+  Serial.print("B pulse = ");
+  Serial.println(bPulse);
+  }
+  int Ab = bPulse * Rb;                  // adjust reading for responsiveness
+  int Cb = Ab - Ac;                      // correct for clear reading
 
 
-int getLastColor(){return lastColor;}
+  int r;
+  int g;
+  int b;
+  int classify = maxDelta(rPulse, gPulse, bPulse);
+  if (classify != 0) {
+    if (classify == RED) {
+      if (printy){Serial.println("red");}
+      return RED;
+    } else if (classify == GREEN) {
+      if (printy){Serial.println("green");}
+      return GREEN;
+    } else {
+      if (printy){Serial.println("blue");}
+      return BLUE;
+    }
+  } else {
+    //Serial.println("No color");
+    return 0;
+  }}
 
 const int delta = 500;
   int maxDelta(int rF, int gF, int bF) {
