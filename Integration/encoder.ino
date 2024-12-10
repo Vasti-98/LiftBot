@@ -37,6 +37,15 @@ void turnAround(){
   right_m.setSpeed(0);
 }
 
+void backPickUp(){ //after sensing the color, it backs up a bit to pick up the ball
+  resetLeftEncoderCnt();
+  resetRightEncoderCnt();
+  backFeedback(getEncoderRightCnt(),getEncoderLeftCnt(),20);
+  delay(500);
+  left_m.setSpeed(0); 
+  right_m.setSpeed(0);  
+}
+
 void turnLeft(){
   left_m.directionBackward();
   right_m.directionForward();

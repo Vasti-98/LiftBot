@@ -1,6 +1,3 @@
-
-
-// Timing variables
 #include <stdio.h>
 unsigned long previousTime = 0;
 
@@ -37,12 +34,26 @@ int handleStateTransition(int currentState, int event) {
       if (event == BT_START_EVENT) {
         currentTarget = UNSORTED_BIN;
         return DRIVING_STATE;
+      } else if (event == BLUE_DETECTED_EVENT){ //need to identify the color sensor
+        backPickUp(); //this is from encoder.ino
+        pickUpObject(); //from servocontrol //this needs editing 
+        turnAround(); //turns 180
+        //need to drive straight to blue bin
+      } else if (event == RED_DETECTED_EVENT){
+        backPickUp(); 
+        pickUpObject(); 
+        turnAround(); 
+        //need to drive strsight to homebase
+        //drive left  turnLeft()
+        //go straight 
+        //dropUpObject()
       }
       break;
     case DRIVING_STATE:
       if (event == LLINE_DETECTED_EVENT) {
         if ()
       }
+     
       
   }
 }
@@ -59,5 +70,6 @@ int readColorSensor() {
 
 
 void loop() {
+  
 
 }

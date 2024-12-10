@@ -2,7 +2,7 @@
 
 // Define pins
 const int leftServo = 25; //p4.2
-const int rightServo = 28;//p4.7 
+const int rightServo = 23;//p4.7 
 const int feedbackPin = A0;      // Analog pin to read feedback
 
 //payload is 100g 
@@ -16,21 +16,23 @@ const int flatTilt = 1650;
 const int upTilt = 19000; 
 
 Servo gripper;
-const int openGrip = 500; //open
+const int openGrip = 500; //open 
 const int closeGrip = 2400; // fully clsoed
+
+//600 to 900 to open and hold the 
 
 void pickUpObject() {
   gripper.writeMicroseconds(openGrip); //ensuring gripper is one
-  servo_right.writeMicroseconds(lowHeight);
-  servo_left.writeMicroseconds(flatTilt);
+  servo_right.writeMicroseconds(600);
+  servo_left.writeMicroseconds(downTilt);
   delay(1000);
-  gripper.writeMicroseconds(closeGrip);
+  gripper.writeMicroseconds(900);
   delay(1000);
   servo_right.writeMicroseconds(highHeight);
 }
 
 void dropUpObject() {
-  gripper.writeMicroseconds(closeGrip); //ensuring gripper is closed, maybe delete 
+  gripper.writeMicroseconds(900); //ensuring gripper is closed, maybe delete 
   servo_right.writeMicroseconds(lowHeight);
   servo_right.writeMicroseconds(flatTilt);
   delay(1000);

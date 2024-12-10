@@ -60,3 +60,34 @@ void straightFeedback(uint32_t tickR, uint32_t tickL){
   left_m.setSpeed(leftSpeed);
   right_m.setSpeed(rightSpeed);
 }
+
+void backFeedback(uint32_t tickR, uint32_t tickL, int speed){
+    left_m.enableMotor();
+    right_m.enableMotor();
+    left_m.directionBackward();
+    right_m.directionBackward();
+ 
+  float diff = ((float)tickL - (float)tickR) / 2.0;  //positive 
+
+  const float Kp = 0.06; 
+  float correct = Kp * diff;
+  float baseSpeed = (float) speed; 
+  const float deadband = 2.0;     // Deadband threshold to ignore minor errors
+
+  float leftSpeed = baseSpeed - correct;
+  float rightSpeed = baseSpeed + correct;
+
+  //no correction is applied to prevent constant minior adjustments 
+  if (fabs(diff) < deadband) {
+    leftSpeed = baseSpeed;
+    rightSpeed = baseSpeed;
+  } 
+  // Ensure motor speeds are within valid range
+  leftSpeed = constrain(leftSpeed, 0, 255);   // Assuming motor speed range is 0-255
+  rightSpeed = constrain(rightSpeed, 0, 255);
+  
+  //setting the speeds
+  left_m.setSpeed((int)leftSpeed);
+  right_m.setSpeed((int)rightSpeed);
+
+}
