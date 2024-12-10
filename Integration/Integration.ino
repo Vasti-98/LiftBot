@@ -101,20 +101,21 @@ int handleStateTransition(int currentState, int event) {
           break;
       }
 
-      /*
-      if (event == RED_DETECTED_EVENT && (currentTarget == UNSORTED_BIN && (pastHalf && returning)) {
+      
+      if (event == RED_DETECTED_EVENT && (currentTarget == UNSORTED_BIN && (pastHalf && returning))) {
         lastTarget = UNSORTED_BIN;
         currentTarget = RED_BIN;
         return PICKUP_STATE;
       }
-      */
+      
 }
 }
 
 
 
 void setup() {
-  Serial.begin(9600);
+ 
+ Serial.begin(9600);
 }
 
 
