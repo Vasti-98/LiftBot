@@ -54,8 +54,10 @@ volatile int currentState = IDLE_STATE;
 volatile int lastColor;
 volatile bool turning = false;
 volatile bool picking = false;
-
-
+volatile bool leftEnable = true;
+volatile bool rightEnable = true;
+volatile int lcooldown = 0;
+volatile int rcooldown = 0;
 /*
  * pastHalf and returning are updated BEFORE entering turning state
  *  Current Target and New Target are updated BEFORE entering dropping/pickup state
@@ -70,8 +72,9 @@ int handleStateTransition(int inState, int event) {
         currentTarget = UNSORTED_BIN;
         returning = true;
         pastHalf = true;
-        return DRIVING_STATE;
+        return IDLE_PICKUP_STATE;
       }
+      return inState;
       break;  
       
     case IDLE_PICKUP_STATE:
@@ -88,6 +91,7 @@ int handleStateTransition(int inState, int event) {
         }
         return PICKUP_STATE;
       }
+      return inState;
       break;
       
     case DRIVING_STATE:
@@ -109,7 +113,6 @@ int handleStateTransition(int inState, int event) {
           Serial.println("Left line detected, no action taken");
           return inState;
           }
-          break;
       }
       if (event == RLINE_DETECTED_EVENT) { //Right line detected while driving
         if ((currentTarget == UNSORTED_BIN && lastTarget == RED_BIN)&& returning) {
@@ -130,11 +133,12 @@ int handleStateTransition(int inState, int event) {
           }
         } else {
           Serial.println("Right line detected, no action taken");
+          return(inState);
           }
-          break;
       }
       if ((event == RED_DETECTED_EVENT || event == BLUE_DETECTED_EVENT || event == GREEN_DETECTED_EVENT) && (currentTarget == UNSORTED_BIN && (pastHalf && returning))) { // color detected and expected pickup area
         lastTarget = UNSORTED_BIN;
+        lastColor = getLastColor();
         if (lastColor == 1) {//red
           currentTarget = RED_BIN;
         } else if (lastColor == 2) { //green
@@ -146,6 +150,8 @@ int handleStateTransition(int inState, int event) {
         }
         return PICKUP_STATE;
       }
+      return inState;
+      break;
       
     case T180_STATE:
       if (event == TURN_FINISHED_EVENT) {
@@ -188,6 +194,7 @@ void setup() {
 
 int incomingByte = 0;
 int lineState = 0;
+int lineUpdates;
 void loop() {
   if (DEBUGGING) {
     if (getLineUpdates() == 1) {
@@ -212,6 +219,36 @@ void loop() {
         lineFollowState = lineState;
         lineFollowHelper(lineState);
       }
+      lineUpdates = getLineUpdates();
+      if (lineUpdates == 1) {
+        currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
+      } else if (lineUpdates == 2) {
+        currentState = handleStateTransition(currentState, RLINE_DETECTED_EVENT);
+      }
+      break;
+    case PICKUP_STATE:
+      //pickup sequence
+      currentState = handleStateTransition(currentState, PICKUP_FINISHED_EVENT);
+      break;
+    case DROPPING_STATE:
+      //dropping sequence
+      currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
+    case T90_LEFT_STATE:
+      turnLeft();
+      turnOnSlow();
+      delay(500);
+      currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
+      break;
+    case T90_RIGHT_STATE:
+      turnRight();
+      turnOnSlow();
+      delay(500);
+      currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
+    case T180_STATE:
+      turnAround();
+      turnOnSlow();
+      delay(500);
+      currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
     }
   }
 }
