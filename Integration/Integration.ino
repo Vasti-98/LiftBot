@@ -11,6 +11,7 @@ unsigned long previousTime = 0;
  */
 
 #define DEBUGGING true
+#define DEMO true
 
 //states
 #define IDLE_STATE 0
@@ -19,7 +20,7 @@ unsigned long previousTime = 0;
 #define T90_LEFT_STATE 3
 #define T90_RIGHT_STATE 4
 #define DROPPING_STATE 5
-#define T180_STATE 6
+#define T180_STATE 50
 #define IDLE_PICKUP_STATE 18
 
 //events
@@ -178,9 +179,7 @@ int handleStateTransition(int inState, int event) {
 
 
 void setup() {
- //setupBluetooth();
- //setupColor();
- //setupEncoder();
+
  Serial.begin(9600); 
  //lineSetup();
 }
@@ -189,11 +188,13 @@ void setup() {
 int incomingByte = 0;
 int lineState = 0;
 void loop() {
+  
   if (DEBUGGING) {
-    if (getLineUpdates() == 1) {
-      Serial.println(1);
-    }
+      testpick();
 
+
+  } else if (DEMO) {
+    Serial.println(1);
   } else {
   bool btval = getBtOn();
   if (!btval) { //check for bluetooth shutdown
