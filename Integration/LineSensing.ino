@@ -26,13 +26,13 @@ void lineSetup()
 
 void floorCalibration() {
   /* Place Robot On Floor (no line) */
-  delay(2000);
+
   String btnMsg = "Push left button on Launchpad to begin calibration.\n";
   btnMsg += "Make sure the robot is on the floor away from the line.\n";
   /* Wait until button is pressed to start robot */
   waitBtnPressed(LP_LEFT_BTN,btnMsg,RED_LED);
 
-  delay(1000);
+
 
   Serial.println("Running calibration on floor");
   simpleCalibrate();
@@ -42,7 +42,6 @@ void floorCalibration() {
   btnMsg += "GLHF :)\n";
   /* Wait until button is pressed to start robot */
   waitBtnPressed(LP_LEFT_BTN,btnMsg,RED_LED);
-  delay(1000);
 
 }
 
@@ -66,10 +65,10 @@ int getLineUpdates() {
       Serial.println();
     }
     if (sensorVal[7] > 2000) {
-      return 2;
+      return 2; //right most sensor dark
     }
     if (sensorVal[0] > 2000) {
-      return 1;
+      return 1; //left most sensor dark
     }
     return 0;
 

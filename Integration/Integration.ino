@@ -16,7 +16,7 @@ unsigned long previousTime = 0;
 //states
 #define IDLE_STATE 0
 #define DRIVING_STATE 1
-#define PICKUP_STATE 2
+#define PICKUP_STATE 51
 #define T90_LEFT_STATE 3
 #define T90_RIGHT_STATE 4
 #define DROPPING_STATE 5
@@ -24,7 +24,7 @@ unsigned long previousTime = 0;
 #define IDLE_PICKUP_STATE 18
 
 //events
-#define BT_START_EVENT 7
+#define BT_START_EVENT 52
 #define BT_STOP_EVENT 8
 #define LLINE_DETECTED_EVENT 9
 #define RLINE_DETECTED_EVENT 10
