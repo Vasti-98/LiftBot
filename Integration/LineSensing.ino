@@ -3,19 +3,17 @@
  *
  *  Modified by Cheyenne Arnold
  */
-#include <SimpleRSLK.h>
-
 #define LF_LEFT 19
 #define LF_MID 20
 #define LF_RIGHT 21
-
+#include "SimpleRSLK.h"
 
 uint16_t sensorVal[LS_NUM_SENSORS];
 uint16_t sensorCalVal[LS_NUM_SENSORS];
 uint16_t sensorMaxVal[LS_NUM_SENSORS];
 uint16_t sensorMinVal[LS_NUM_SENSORS];
 uint8_t lineColor = DARK_LINE;
-void setupLine()
+void lineSetup()
 {
 
   setupRSLK();
@@ -56,6 +54,26 @@ void simpleCalibrate() {
   }
 }
 
+int getLineUpdates() {
+    readLineSensor(sensorVal);
+    readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
+    uint32_t linePos = getLinePosition(sensorCalVal,lineColor);
+    if (true) {
+      for (int i = 0; i < 8; i++) {
+        Serial.print(sensorVal[i]);
+        Serial.print(" ");
+      }
+      Serial.println();
+    }
+    if (sensorVal[7] > 2000) {
+      return 2;
+    }
+    if (sensorVal[0] > 2000) {
+      return 1;
+    }
+    return 0;
+
+}
 
 int getLineState() {
     readLineSensor(sensorVal);

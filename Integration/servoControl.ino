@@ -15,8 +15,6 @@ void setupServo(){
   gripper.attach(2); 
 }
 
-
-
 void pickUpObject() {
   gripper.writeMicroseconds(openGrip); //ensuring gripper is one
   servo_right.writeMicroseconds(600);

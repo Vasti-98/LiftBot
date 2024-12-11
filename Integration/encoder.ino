@@ -1,12 +1,9 @@
 #include "encoder.h"
-#include <stdint.h>
-#include <Encoder.h>
-#include <RSLK_Pins.h> 
 
 void setupEncoder(){
   // Initialize serial for debugging
   /**to find certain pins look at RSLK_PIN*/
-  //setupEncoder(ENCODER_ELA_PIN,ENCODER_ELB_PIN, ENCODER_ERA_PIN, ENCODER_ERB_PIN);
+  setupEncoder(ENCODER_ELA_PIN,ENCODER_ELB_PIN, ENCODER_ERA_PIN, ENCODER_ERB_PIN);
   //initialize the motors
   left_m.begin(31,29,40);
   right_m.begin(11, 30,39);
@@ -16,18 +13,20 @@ void setupEncoder(){
   resetRightEncoderCnt();
 }
 
-void lineFollowL(){
-  left_m.setSpeed(50);
-  right_m.setSpeed(30);
+void lineFollowHelper(int lineFollowState){
+  switch (lineFollowState){
+    case LF_LEFT:
+      left_m.setSpeed(50);
+      right_m.setSpeed(30);
+    case LF_MID:
+      left_m.setSpeed(30);
+      right_m.setSpeed(30);
+    case LF_RIGHT:
+      left_m.setSpeed(30);
+      right_m.setSpeed(50);      
+  }
 }
-void lineFollowM(){
-  left_m.setSpeed(30);
-  right_m.setSpeed(30);
-}
-void lineFollowR(){
-  left_m.setSpeed(30);
-  right_m.setSpeed(50);
-}
+
 
 void turnOn(){
     // Print message for debugging
@@ -153,6 +152,7 @@ void backFeedback(uint32_t tickR, uint32_t tickL, int speed){
   right_m.setSpeed((int)rightSpeed);
 
 }
+
 
 void loopEncoder(){ //orginally: loopEncoder
   

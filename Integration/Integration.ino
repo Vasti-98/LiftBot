@@ -50,7 +50,7 @@ volatile int currentTarget = UNSORTED_BIN;
 volatile int lastTarget;
 volatile bool pastHalf = true;
 volatile bool returning = true;
-volatile int state = IDLE_STATE;
+volatile int currentState = IDLE_STATE;
 volatile int lastColor;
 volatile bool turning = false;
 volatile bool picking = false;
@@ -60,11 +60,11 @@ volatile bool picking = false;
  * pastHalf and returning are updated BEFORE entering turning state
  *  Current Target and New Target are updated BEFORE entering dropping/pickup state
  */
-int handleStateTransition(int currentState, int event) {
+int handleStateTransition(int inState, int event) {
   if (event == BT_STOP_EVENT) {
     return IDLE_STATE;
   }
-  switch(currentState) {
+  switch(inState) {
     case IDLE_STATE:
       if (event == BT_START_EVENT) { //starting
         currentTarget = UNSORTED_BIN;
@@ -107,7 +107,7 @@ int handleStateTransition(int currentState, int event) {
           }
         } else {
           Serial.println("Left line detected, no action taken");
-          return currentState;
+          return inState;
           }
           break;
       }
@@ -181,27 +181,37 @@ void setup() {
  //setupBluetooth();
  //setupColor();
  //setupEncoder();
+ Serial.begin(9600); 
  //lineSetup();
- Serial.begin(9600);
 }
 
 
 int incomingByte = 0;
+int lineState = 0;
 void loop() {
   if (DEBUGGING) {
-            if (Serial.available() > 0) {
-                // read the incoming byte:
-                incomingByte = Serial.read();
+    if (getLineUpdates() == 1) {
+      Serial.println(1);
+    }
 
-                // say what you got:
-                Serial.print("I received: ");
-                Serial.println(incomingByte, DEC);
-        }
   } else {
   bool btval = getBtOn();
   if (!btval) { //check for bluetooth shutdown
-    handleStateTransition(state, BT_STOP_EVENT);
+    currentState = handleStateTransition(currentState, BT_STOP_EVENT);
+    }
+  switch(currentState) {
+    case IDLE_STATE:
+      if (btval) {
+        currentState = handleStateTransition(currentState, BT_START_EVENT);
+      }
+      break;
+    case DRIVING_STATE:
+      lineState = getLineState();
+      
+      if (lineState != lineFollowState) {
+        lineFollowState = lineState;
+        lineFollowHelper(lineState);
+      }
     }
   }
-  delay(1000);
 }
