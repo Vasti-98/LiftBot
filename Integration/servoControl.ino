@@ -1,26 +1,21 @@
-#include <Servo.h>
+#include "servoControl.h"
 
-// Define pins
-const int leftServo = 25; //p4.2
-const int rightServo = 23;//p4.7 
-const int gripperpin = 24;
-const int feedbackPin = A0;      // Analog pin to read feedback
-
-//payload is 100g 
-Servo servo_right;//0-60 degrees (height of the robot arm)
-const int lowHeight = 500;
-const int highHeight = 2000; 
-
-Servo servo_left; //0-110 degrees (wrist tilt )
+//600 to 900 to open and hold the 
 const int downTilt = 1200;
 const int flatTilt = 1650; 
 const int upTilt = 19000; 
-
-Servo gripper;
+const int lowHeight = 500;
+const int highHeight = 2000; 
 const int openGrip = 500; //open 
 const int closeGrip = 2400; // fully clsoed
 
-//600 to 900 to open and hold the 
+void setupServo(){
+  servo_right.attach(8);
+  servo_left.attach(7);
+  gripper.attach(2); 
+}
+
+
 
 void pickUpObject() {
   gripper.writeMicroseconds(openGrip); //ensuring gripper is one
@@ -38,4 +33,7 @@ void dropUpObject() {
   servo_right.writeMicroseconds(flatTilt);
   delay(1000);
   gripper.writeMicroseconds(openGrip);  
+}
+void loopServo(){
+  
 }

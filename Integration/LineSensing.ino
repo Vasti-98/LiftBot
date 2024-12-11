@@ -3,17 +3,19 @@
  *
  *  Modified by Cheyenne Arnold
  */
+#include <SimpleRSLK.h>
+
 #define LF_LEFT 19
 #define LF_MID 20
 #define LF_RIGHT 21
-#include "SimpleRSLK.h"
+
 
 uint16_t sensorVal[LS_NUM_SENSORS];
 uint16_t sensorCalVal[LS_NUM_SENSORS];
 uint16_t sensorMaxVal[LS_NUM_SENSORS];
 uint16_t sensorMinVal[LS_NUM_SENSORS];
 uint8_t lineColor = DARK_LINE;
-void lineSetup()
+void setupLine()
 {
 
   setupRSLK();
