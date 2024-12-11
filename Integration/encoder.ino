@@ -41,6 +41,13 @@ void turnOff(){
   left_m.disableMotor();
   right_m.disableMotor();
 }
+void turnOnSlow(){
+    // Print message for debugging
+  left_m.directionForward();
+  right_m.directionForward();
+  left_m.setSpeed(55); 
+  right_m.setSpeed(55); 
+}
 
 void turnAround(){
   left_m.directionBackward();
