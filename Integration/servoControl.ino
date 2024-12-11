@@ -3,6 +3,7 @@
 // Define pins
 const int leftServo = 25; //p4.2
 const int rightServo = 23;//p4.7 
+const int gripperpin = 24;
 const int feedbackPin = A0;      // Analog pin to read feedback
 
 //payload is 100g 

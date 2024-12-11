@@ -19,7 +19,7 @@ int S0 = 13;
 int RED = 1;
 int GREEN = 2;
 int BLUE = 3;
-volatile int lastColor = 0;
+
 
 // constants - adjust if getting poor readings
 const int Rc = 100;                      // Clear Relative Responsivity 
@@ -27,8 +27,8 @@ const int Rr = 99;                       // Red Relative Responsivity
 const int Rg = 55;                       // Green Relative Responsivity 
 const int Rb = 70;                       // Blue Relative Responsivity 
 volatile bool printy = false;
-
-int getLastColor(){
+int getLastColor(){return lastColor;}
+int getColor(){
   
   digitalWrite(S2, HIGH);                // get ready to read clear
   digitalWrite(S3, LOW);
@@ -94,25 +94,32 @@ const int delta = 500;
   int maxDelta(int rF, int gF, int bF) {
     if (abs(rF - gF) > delta) {
       if (rF < gF){
+          lastColor = RED;
           return RED;
         } else {
+          lastColor = GREEN;
           return GREEN;
         }
     }
     if (abs(rF - bF) > delta) {
       if (rF < bF) {
+        lastColor = RED;
         return RED;
     } else {
+      lastColor = BLUE;
       return BLUE;
       }
     }
     if (abs(gF - bF) > delta){
       if (gF < bF) {
+        lastColor = GREEN;
         return GREEN;
       } else {
+        lastColor = BLUE;
         return BLUE;
       }
     }
+    lastColor = 0;
     return 0;
   }
 void setupColor()

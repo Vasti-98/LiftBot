@@ -13,6 +13,19 @@ void setupEncoder(){
   resetRightEncoderCnt();
 }
 
+void lineFollowL(){
+  left_m.setSpeed(50);
+  right_m.setSpeed(30);
+}
+void lineFollowM(){
+  left_m.setSpeed(30);
+  right_m.setSpeed(30);
+}
+void lineFollowR(){
+  left_m.setSpeed(30);
+  right_m.setSpeed(50);
+}
+
 void turnOn(){
     // Print message for debugging
   left_m.enableMotor();
@@ -35,6 +48,7 @@ void turnAround(){
   delay(680);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
+  left_m.directionForward();
 }
 
 void backPickUp(){ //after sensing the color, it backs up a bit to pick up the ball
@@ -54,6 +68,7 @@ void turnLeft(){
   delay(340);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
+  left_m.directionForward();
 }
 
 void turnRight(){
@@ -64,6 +79,7 @@ void turnRight(){
   delay(340);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
+  right_m.directionForward();
 }
 void encoderReset(){//resets the encoder need to do 
 }

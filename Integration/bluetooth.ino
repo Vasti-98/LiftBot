@@ -10,7 +10,7 @@ int cmd2Index = 0;
 
 //
 bool btOn = false; 
-
+bool getBtOn() {return btOn;}
 void setupBluetooth() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
@@ -50,6 +50,7 @@ void btloop() {
       digitalWrite(LED_BUILTIN, LOW);
       Serial.println(": COMMAND SENT FROM PHONE: TURN OFF");
     } else {
+      btOn = false;
       Serial.println(": INVALID COMMAND");
     }
   }
