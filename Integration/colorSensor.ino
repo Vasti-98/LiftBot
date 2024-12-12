@@ -20,14 +20,14 @@ int RED = 1;
 int GREEN = 2;
 int BLUE = 3;
 
-#define printy true
+#define printy false
 
 
 // constants - adjust if getting poor readings
 const int Rc = 100;                      // Clear Relative Responsivity 
-const int Rr = 99;                       // Red Relative Responsivity 
-const int Rg = 55;                       // Green Relative Responsivity 
-const int Rb = 70;                       // Blue Relative Responsivity 
+const int Rr = 90;                       // Red Relative Responsivity 
+const int Rg = 85;                       // Green Relative Responsivity 
+const int Rb = 85;                       // Blue Relative Responsivity 
 
 int getLastColor(){return lastColor;}
 int getColor(){
@@ -75,14 +75,14 @@ int getColor(){
   int r;
   int g;
   int b;
-  int classify = maxDelta(rPulse, gPulse, bPulse);
-  if (printy) {
+  int classify = maxDelta(Cr, Cg, Cb);
+  if (true) {
     Serial.println("RGB");
-    Serial.print(rPulse);
+    Serial.print(Cr);
     Serial.print(" ");
-    Serial.print(gPulse);
+    Serial.print(Cg);
     Serial.print(" ");
-    Serial.print(bPulse);
+    Serial.print(Cb);
     Serial.print(" ");
   }
   if (classify != 0) {
@@ -101,7 +101,7 @@ int getColor(){
     return 0;
   }}
 
-const int delta = 500;
+const int delta = 10000;
   int maxDelta(int rF, int gF, int bF) {
     if (abs(rF - gF) > delta) {
       if (rF < gF){

@@ -10,7 +10,7 @@ unsigned long previousTime = 0;
  *   Made for final project in EE149 @ UC Berkeley, Fall 2024
  */
 
-#define DEBUGGING false
+#define DEBUGGING true
 #define DEMO false
 
 //states
@@ -197,10 +197,12 @@ int lineUpdates;
 void loop() {
   
   if (DEBUGGING) {
-    lineUpdates = getLineUpdates();
+    //lineUpdates = getLineUpdates();
       //Serial.print(lineUpdates);
-      getColor();
-
+      lineUpdates = getColor();
+      Serial.println(lineUpdates);
+      //Serial.println(lastColor);
+      //testPick();
 
   } else if (DEMO) {
     Serial.println(1);
