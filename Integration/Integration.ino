@@ -10,8 +10,8 @@ unsigned long previousTime = 0;
  *   Made for final project in EE149 @ UC Berkeley, Fall 2024
  */
 
-#define DEBUGGING true
-#define DEMO true
+#define DEBUGGING false
+#define DEMO false
 
 //states
 #define IDLE_STATE 0
@@ -197,19 +197,26 @@ int lineUpdates;
 void loop() {
   
   if (DEBUGGING) {
-      testpick();
+    lineUpdates = getLineUpdates();
+      //Serial.print(lineUpdates);
+      getColor();
 
 
   } else if (DEMO) {
     Serial.println(1);
   } else {
-  bool btval = getBtOn();
+    //PRINTING
+    Serial.println(currentState);
+
+
+  bool btval = true;
   if (!btval) { //check for bluetooth shutdown
     currentState = handleStateTransition(currentState, BT_STOP_EVENT);
     }
   switch(currentState) {
     case IDLE_STATE:
       if (btval) {
+        Serial.println("Bluetooth start command, moving to driving");
         currentState = handleStateTransition(currentState, BT_START_EVENT);
       }
       break;
@@ -222,17 +229,23 @@ void loop() {
       }
       lineUpdates = getLineUpdates();
       if (lineUpdates == 1) {
+        Serial.print("Left line detected in state ");
+        Serial.println(currentState);
         currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
       } else if (lineUpdates == 2) {
+        Serial.print("Left line detected in state ");
+        Serial.println(currentState);
         currentState = handleStateTransition(currentState, RLINE_DETECTED_EVENT);
       }
       break;
     case PICKUP_STATE:
       //pickup sequence
+      Serial.println("PickedUp");
       currentState = handleStateTransition(currentState, PICKUP_FINISHED_EVENT);
       break;
     case DROPPING_STATE:
       //dropping sequence
+      Serial.println("Dropped");
       currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
     case T90_LEFT_STATE:
       turnLeft();
