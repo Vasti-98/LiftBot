@@ -16,17 +16,38 @@ void setupEncoder(){
 void lineFollowHelper(int lineFollowState){
   switch (lineFollowState){
     case LF_LEFT:
-      left_m.setSpeed(50);
-      right_m.setSpeed(30);
+      left_m.setSpeed(30);
+      right_m.setSpeed(10);
     case LF_MID:
-      left_m.setSpeed(30);
-      right_m.setSpeed(30);
+      left_m.setSpeed(10);
+      right_m.setSpeed(10);
     case LF_RIGHT:
-      left_m.setSpeed(30);
-      right_m.setSpeed(50);      
+      left_m.setSpeed(10);
+      right_m.setSpeed(15);      
   }
 }
-
+void updateLineFollower() {
+    readLineSensor(sensorVal);
+    readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
+    uint32_t linePos = getLinePosition(sensorCalVal,lineColor);
+  if(linePos > 3000 && linePos < 3250) {
+      left_m.setSpeed(10);
+      right_m.setSpeed(15);
+  } else if(linePos > 3750 && linePos < 4000) {
+      left_m.setSpeed(15);
+      right_m.setSpeed(10);
+  } else if (linePos < 3000){
+      left_m.setSpeed(10);
+      right_m.setSpeed(20);
+  }else if (linePos > 4000){
+      left_m.setSpeed(20);
+      right_m.setSpeed(10);    
+  }
+  else {
+      left_m.setSpeed(10);
+      right_m.setSpeed(10);  
+  }
+}
 
 void turnOn(){
     // Print message for debugging
@@ -34,8 +55,8 @@ void turnOn(){
   right_m.enableMotor();
   left_m.directionForward();
   right_m.directionForward();
-  left_m.setSpeed(150); 
-  right_m.setSpeed(150); 
+
+
 }
 void turnOff(){
   left_m.disableMotor();
@@ -43,18 +64,20 @@ void turnOff(){
 }
 void turnOnSlow(){
     // Print message for debugging
-  left_m.directionForward();
-  right_m.directionForward();
-  left_m.setSpeed(55); 
-  right_m.setSpeed(55); 
+  left_m.setSpeed(10); 
+  right_m.setSpeed(10); 
+}
+void stopWheels() {
+  left_m.setSpeed(0);
+  right_m.setSpeed(0);
 }
 
 void turnAround(){
   left_m.directionBackward();
   right_m.directionForward();
-  left_m.setSpeed(55); 
-  right_m.setSpeed(55);
-  delay(680);
+  left_m.setSpeed(15); 
+  right_m.setSpeed(15);
+  delay(2060);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
@@ -72,20 +95,20 @@ void backPickUp(){ //after sensing the color, it backs up a bit to pick up the b
 void turnLeft(){
   left_m.directionBackward();
   right_m.directionForward();
-  left_m.setSpeed(55); 
-  right_m.setSpeed(55);
-  delay(340);
+  left_m.setSpeed(15); 
+  right_m.setSpeed(15);
+  delay(1100);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
 }
 
 void turnRight(){
-  left_m.directionForward();
   right_m.directionBackward();
-  left_m.setSpeed(55); 
-  right_m.setSpeed(55);
-  delay(340);
+  left_m.directionForward();
+  left_m.setSpeed(15); 
+  right_m.setSpeed(15);
+  delay(1100);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   right_m.directionForward();

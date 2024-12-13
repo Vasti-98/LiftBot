@@ -21,13 +21,49 @@ int GREEN = 2;
 int BLUE = 3;
 
 #define printy false
-
+#define SAMPLES 100
 
 // constants - adjust if getting poor readings
 const int Rc = 100;                      // Clear Relative Responsivity 
-const int Rr = 90;                       // Red Relative Responsivity 
+const int Rr = 93;                       // Red Relative Responsivity 
 const int Rg = 85;                       // Green Relative Responsivity 
 const int Rb = 85;                       // Blue Relative Responsivity 
+int rcount;
+int gcount;
+int bcount;
+int tempcolor;
+int getColorSamples() {
+  rcount = 0;
+  gcount = 0;
+  bcount = 0;
+  for (int i = 0; i < SAMPLES; i++) {
+    tempcolor = getColor();
+    switch(tempcolor) {
+      case 0:
+        break;
+      case 1:
+        rcount++;
+        break;
+      case 2:
+        gcount++;
+        break;
+      case 3:
+        bcount++;
+        break;
+    }
+  }
+    Serial.println(bcount);
+    if (rcount * 3 > SAMPLES) {
+      return RED;
+    }
+    if (gcount * 3 > SAMPLES) {
+      return GREEN;
+    }
+    if (bcount * 3 > SAMPLES) {
+      return BLUE;
+    }
+    return 0;
+  }
 
 int getLastColor(){return lastColor;}
 int getColor(){
@@ -150,7 +186,10 @@ void setupColor()
   pinMode(BLUE_LED, OUTPUT);             // B on RGB LED of MSP432
 }
 
-void loopColor(){//this is loopColor()
+void loopColor() {
+
+}
+void otherColor(){//this is loopColor()
   //------------------ Read raw values and correct them ----------------------
   digitalWrite(S2, HIGH);                // get ready to read clear
   digitalWrite(S3, LOW);

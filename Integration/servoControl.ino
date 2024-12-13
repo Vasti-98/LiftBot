@@ -87,17 +87,11 @@ void moveRange(int low, int high) {
     }
 
 }
-void testpick(){
+void testPick(){
   pickUpObject();
-  temp = millis();
-  while(millis() > temp + 1000) {
-    Serial.println();
-  }
+  delay(800);
   dropUpObject();
-   temp = millis();
-  while(millis() > temp + 1000) {
-    Serial.println();
-  }
+  delay(800);
   
   
 
