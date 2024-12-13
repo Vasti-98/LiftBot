@@ -77,7 +77,7 @@ void turnAround(){
   right_m.directionForward();
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
-  delay(2060);
+  delay(1900);//prev 2060
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();

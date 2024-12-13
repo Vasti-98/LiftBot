@@ -139,7 +139,8 @@ int getColor(){
 
 const int delta = 10000;
   int maxDelta(int rF, int gF, int bF) {
-    if (abs(rF - gF) > delta) {
+
+  if (abs(rF - gF) > delta) {
       if (rF < gF){
           lastColor = RED;
           return RED;
@@ -147,8 +148,7 @@ const int delta = 10000;
           lastColor = GREEN;
           return GREEN;
         }
-    }
-    if (abs(rF - bF) > delta) {
+    } else if (abs(rF - bF) > delta) {
       if (rF < bF) {
         lastColor = RED;
         return RED;
@@ -156,18 +156,19 @@ const int delta = 10000;
       lastColor = BLUE;
       return BLUE;
       }
-    }
-    if (abs(gF - bF) > delta){
+    } else if (abs(gF - bF) > delta){
       if (gF < bF) {
         lastColor = GREEN;
         return GREEN;
-      } else {
+      } else if (gF > bF){ //changed this logic
         lastColor = BLUE;
         return BLUE;
       }
-    }
-    lastColor = 0;
+    } else {
+          lastColor = 0;
     return 0;
+      
+    }
   }
 void setupColor()
 {

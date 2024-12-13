@@ -1,5 +1,6 @@
-
 #include <Servo.h>
+#include "header.h"
+
 //600 to 900 to open and hold the 
 const int downTilt = 1200;
 const int flatTilt = 1650; 
@@ -13,103 +14,38 @@ const int openGrip = 0; //open
 const int closeGrip = 35; // closed on block
 int pos = 0;
 
-
-Servo myservo;
-#define RIGHT_SERVO 6
-#define LEFT_SERVO 7
-#define GRIPPER 2
-
-volatile int temp;
-volatile int rpos = low_R;
-volatile int lpos = low_L;
-volatile int gpos = openGrip;
-
 void setupServo(){
-  myservo.attach(LEFT_SERVO);
-  myservo.write(low_L);
-  
-  
-  
+  //servo_right.attach(7);
+  servo_left.attach(6);
+  //gripper.attach(2); 
 }
 
 void pickUpObject() {
-  //going down
-  myservo.attach(GRIPPER); //ensuring gripper is one
-  myservo.write(openGrip);
-  gpos = openGrip;
-  
-  myservo.attach(RIGHT_SERVO);
-  moveRange(rpos, low_L);
-  rpos = low_L;
-  Serial.println("arm down");
-  myservo.attach(GRIPPER);
-  moveRange(gpos, closeGrip);
-  gpos = closeGrip;
-  Serial.println("grip closed");
-
-
-  myservo.attach(RIGHT_SERVO);
-  moveRange(rpos, high_L);
-  rpos = high_L;
-  Serial.println("arm up");
+  Serial.println("go");
+  servo_left.write(60);
+  //gripper.writeMicroseconds(500);//ensures right 
+  delay(900);
+  //gripper.writeMicroseconds(900);
+   for(pos = 60; pos < 81; pos += 1)  // goes from 0 degrees to 70 degrees
+  {                                  // in steps of 1 degree
+    servo_left.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(20);                       // waits 15ms for the servo to reach the position
+  }
+   
 
 }
 
 void dropUpObject() {
+  //gripper.writeMicroseconds(900);
+  for(pos = 80; pos>=60;pos-=1)     // goes from 180 degrees to 0 degrees
+  {
+    servo_left.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(20);                       // waits 15ms for the servo to reach the position
+  }
+  //gripper.writeMicroseconds(500);
   
-  myservo.attach(RIGHT_SERVO);
-  moveRange(rpos, low_L);
-  rpos = low_L;
-  Serial.println("arm down");
+} 
 
-  
-  myservo.attach(GRIPPER);
-  moveRange(gpos, openGrip);
-  gpos = openGrip;
-  Serial.println("grip open");
-
-
-}
-
-void moveRange(int low, int high) {
-  Serial.println("moverangecheck");
-    if (low < high) {
-      for (pos = low; pos < high; pos++) {
-        Serial.println(pos);
-        myservo.write(pos);
-        delay(20);
-      }
-    } else {
-      for (pos = low; pos >= high; pos--) {
-        myservo.write(pos);
-        delay(20);
-      }
-    }
-
-}
-void testPick(){
-  pickUpObject();
-  delay(800);
-  dropUpObject();
-  delay(800);
-  
-  
-
-
-//  servo_right.writeMicroseconds(600);
-//  delay(1000);
-//  servo_right.writeMicroseconds(2000);
-//  delay(1000);
-//    servo_left.writeMicroseconds(1200);
-//  delay(1000);
-//  servo_left.writeMicroseconds(1800);
-//  delay(1000);
-
-
-  
-}
 void loopServo(){
- //ensuring gripper is one
-
   
 }

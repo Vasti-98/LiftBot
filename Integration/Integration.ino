@@ -70,6 +70,7 @@ int handleStateTransition(int inState, int event) {
     case IDLE_STATE:
       if (event == BT_START_EVENT) { //starting
         Serial.println("Starting");
+
         currentTarget = UNSORTED_BIN;
         returning = true;
         pastHalf = true;
@@ -176,7 +177,7 @@ int handleStateTransition(int inState, int event) {
         returning = false;
         return T180_STATE;
       }
-    case DROPPING_STATE:
+    case DROPPING_STATE: // not working
       if (event == DROP_FINISHED_EVENT) {
         if (currentTarget != UNSORTED_BIN){
           lastTarget = currentTarget;
@@ -193,28 +194,29 @@ int handleStateTransition(int inState, int event) {
 void printState(int state, bool vars) {
   switch (state) {
     case IDLE_STATE:
-      Serial.println("Idle State");
+      Serial1.write("Idle State");
+      
       break;
     case DRIVING_STATE:
-      Serial.println("Driving State");
+      Serial1.write("Driving State");
       break;
     case PICKUP_STATE:
-      Serial.println("Pickup State");
+      Serial1.write("Pickup State");
       break;
     case T90_LEFT_STATE:
-      Serial.println("Turn Left State");
+      Serial1.write("Turn Left State");
       break;
     case T90_RIGHT_STATE:
-      Serial.println("Turn Right State");
+      Serial1.write("Turn Right State");
       break;
     case DROPPING_STATE:
-      Serial.println("Dropping State");
+      Serial1.write("Dropping State");
       break;
     case T180_STATE:
-      Serial.println("Turn Around State");
+      Serial1.write("Turn Around State");
       break;    
     case IDLE_PICKUP_STATE:
-      Serial.println("Idle Pickup State");
+      Serial1.write("Idle Pickup State");
       break;
       }
       if (vars) {
@@ -250,8 +252,14 @@ int counter = 0;
 void loop() {
   
   if (DEBUGGING) {
-    tcolor = getColorSamples();
-    Serial.println(tcolor);
+    int tempb = getBtOn();
+
+
+//     if(tempb){
+//      turnAround();
+//      delay(5000);
+// 
+//     }
     /*
     Serial.println("start");
     currentState = handleStateTransition(currentState, BT_START_EVENT);
@@ -318,12 +326,12 @@ void loop() {
     delay(2000);
     */
   } else if (DEMO) {
-    Serial.print(1);
+//    Serial.print(1);
     
     updateLineFollower();
     lineUpdates = getLineUpdates();
     if (lineUpdates == 1) {
-      Serial.println(lineUpdates);
+      Serial1.write(lineUpdates);
       stopWheels();
       delay(300);
       turnLeft();
@@ -350,7 +358,7 @@ void loop() {
     }
 
 
-  bool btval = true;
+ bool btval = getBtOn(); //orignall truew
   if (!btval) { //check for bluetooth shutdown
     currentState = handleStateTransition(currentState, BT_STOP_EVENT);
     }
@@ -394,6 +402,8 @@ void loop() {
       break;
     case DROPPING_STATE:
       //dropping sequence
+      
+      delay(500);//servo code in here  , delete delay afterwards
       Serial.println("Dropped");
       currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
     case T90_LEFT_STATE:
