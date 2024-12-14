@@ -13,7 +13,7 @@ unsigned long previousTime = 0;
  *   Made for final project in EE149 @ UC Berkeley, Fall 2024
  */
 
-#define DEBUGGING true
+#define DEBUGGING false
 #define DEMO false
 
 //states
@@ -413,11 +413,14 @@ void loop() {
       break;
     case PICKUP_STATE:
       //pickup sequence
+      pickUpObject();
+      delay(500);
       Serial.println("PickedUp");
       currentState = handleStateTransition(currentState, PICKUP_FINISHED_EVENT);
       break;
     case DROPPING_STATE:
       //dropping sequence
+      dropUpObject();
       
       delay(500);//servo code in here  , delete delay afterwards
       Serial.println("Dropped");
@@ -458,9 +461,10 @@ void loop() {
 
 
 void pickUpObject() {
+    backPickUp();
     servo_left.write(60);
     gripper.writeMicroseconds(500);//ensures right 
-    delay(2000);
+    delay(4000);
     gripper.writeMicroseconds(900);
     for (int pos = 60; pos < 91; pos += 1) {  // goes from 0 degrees to 70 in 1 degree steps
       servo_left.write(pos);              // tell servo to go to position in variable 'pos'
