@@ -104,6 +104,11 @@ int handleStateTransition(int inState, int event) {
             return IDLE_PICKUP_STATE; // Left side detected pickup line
           } else {
             pastHalf = true;
+
+            
+            Serial.println("Going Green to Unsorted");
+
+            
             return T90_LEFT_STATE; // Left turn going from green to unsorted
           }
         } else if ((currentTarget == RED_BIN && lastTarget == UNSORTED_BIN) && !returning){
@@ -111,6 +116,11 @@ int handleStateTransition(int inState, int event) {
             return DROPPING_STATE; // Left side detected droppoff line
           } else {
             pastHalf = true;
+            
+            
+            Serial.println("Going Unsorted to Red");
+            
+            
             return T90_LEFT_STATE; // Left turn going from unsorted to red;
           }
         } else if ((currentTarget == UNSORTED_BIN) && (returning && pastHalf)) { // left detected pickup line
@@ -193,30 +203,31 @@ int handleStateTransition(int inState, int event) {
 
 void printState(int state, bool vars) {
   switch (state) {
+      Serial.print("----------STATE--------: ");
     case IDLE_STATE:
-      Serial1.write("Idle State");
+      Serial.println("Idle State");
       
       break;
     case DRIVING_STATE:
-      Serial1.write("Driving State");
+      Serial.println("Driving State");
       break;
     case PICKUP_STATE:
-      Serial1.write("Pickup State");
+      Serial.println("Pickup State");
       break;
     case T90_LEFT_STATE:
-      Serial1.write("Turn Left State");
+      Serial.println("Turn Left State");
       break;
     case T90_RIGHT_STATE:
-      Serial1.write("Turn Right State");
+      Serial.println("Turn Right State");
       break;
     case DROPPING_STATE:
-      Serial1.write("Dropping State");
+      Serial.println("Dropping State");
       break;
     case T180_STATE:
-      Serial1.write("Turn Around State");
+      Serial.println("Turn Around State");
       break;    
     case IDLE_PICKUP_STATE:
-      Serial1.write("Idle Pickup State");
+      Serial.println("Idle Pickup State");
       break;
       }
       if (vars) {
@@ -406,7 +417,10 @@ void loop() {
       delay(500);//servo code in here  , delete delay afterwards
       Serial.println("Dropped");
       currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
+      break;
+      
     case T90_LEFT_STATE:
+      Serial1.write("TURNING 90 LEFT");
       stopWheels();
       delay(50);
       turnLeft();
@@ -416,6 +430,7 @@ void loop() {
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
       break;
     case T90_RIGHT_STATE:
+      Serial1.write("TURNING 90 RIGHT");
       stopWheels();
       delay(50);
       turnRight();
@@ -424,6 +439,7 @@ void loop() {
       delay(1500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
     case T180_STATE:
+      Serial1.write("TURNING 180");
       stopWheels();
       delay(50);
       turnAround();

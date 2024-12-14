@@ -113,13 +113,13 @@ int getColor(){
   int b;
   int classify = maxDelta(Cr, Cg, Cb);
   if (true) {
-    Serial.println("RGB");
-    Serial.print(Cr);
-    Serial.print(" ");
-    Serial.print(Cg);
-    Serial.print(" ");
-    Serial.print(Cb);
-    Serial.print(" ");
+//    Serial.println("RGB");
+//    Serial.print(Cr);
+//    Serial.print(" ");
+//    Serial.print(Cg);
+//    Serial.print(" ");
+//    Serial.print(Cb);
+//    Serial.print(" ");
   }
   if (classify != 0) {
     if (classify == RED) {
