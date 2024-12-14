@@ -1,3 +1,6 @@
+#include <Servo.h>
+#include "header.h"
+
 #include <stdio.h>
 
 unsigned long previousTime = 0;
@@ -10,7 +13,7 @@ unsigned long previousTime = 0;
  *   Made for final project in EE149 @ UC Berkeley, Fall 2024
  */
 
-#define DEBUGGING false
+#define DEBUGGING true
 #define DEMO false
 
 //states
@@ -245,12 +248,15 @@ void printState(int state, bool vars) {
 
 void setup() {
 
- Serial.begin(9600); 
- lineSetup();
- currentState = IDLE_PICKUP_STATE;
- pastHalf = true;
- returning = true;
- turnOn();
+  Serial.begin(9600); 
+  lineSetup();
+  currentState = IDLE_PICKUP_STATE; 
+  pastHalf = true;
+  returning = true;
+  turnOn();
+  
+  servo_left.attach(6);
+  gripper.attach(2); 
 }
 
 
@@ -263,14 +269,13 @@ int counter = 0;
 void loop() {
   
   if (DEBUGGING) {
-    int tempb = getBtOn();
+    if (true) {
+      pickUpObject();
+      delay(3000);
+      dropUpObject();
+      delay(3000);
+    }
 
-
-//     if(tempb){
-//      turnAround();
-//      delay(5000);
-// 
-//     }
     /*
     Serial.println("start");
     currentState = handleStateTransition(currentState, BT_START_EVENT);
@@ -450,3 +455,28 @@ void loop() {
     }
   }
 }
+
+
+void pickUpObject() {
+    servo_left.write(60);
+    gripper.writeMicroseconds(500);//ensures right 
+    delay(2000);
+    gripper.writeMicroseconds(900);
+    for (int pos = 60; pos < 91; pos += 1) {  // goes from 0 degrees to 70 in 1 degree steps
+      servo_left.write(pos);              // tell servo to go to position in variable 'pos'
+      delay(20);                       // waits 15ms for the servo to reach the position
+    }
+    Serial.println("PICKUP DONE");
+}
+
+void dropUpObject() {
+  servo_left.write(90);
+  delay(1000);
+  gripper.writeMicroseconds(900);
+  for(int pos = 90; pos >=60;pos-=1)     // goes from 180 degrees to 0 degrees
+  {
+    servo_left.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15ms for the servo to reach the position
+  }
+  gripper.writeMicroseconds(500);
+} 
