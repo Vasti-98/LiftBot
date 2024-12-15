@@ -21,6 +21,7 @@ void lineSetup()
   /* Red led in rgb led */
   setupLed(RED_LED);
   clearMinMax(sensorMinVal,sensorMaxVal);
+  floorCalibration();
 }
 
 void floorCalibration() {
@@ -32,19 +33,35 @@ void floorCalibration() {
   Serial.println("Reading floor values complete");
 
 }
-
+void printMinMax() {
+  Serial.println("min");
+  for (int i = 0; i < 8; i++) {
+    Serial.print(sensorMinVal[i]);
+    Serial.print(" ");
+  }
+  Serial.println();
+  Serial.println("max");
+  
+    for (int i = 0; i < 8; i++) {
+    Serial.print(sensorMaxVal[i]);
+    Serial.print(" ");
+  }
+  Serial.println();
+}
 void simpleCalibrate() {
 
   for(int x = 0;x<100;x++){
     readLineSensor(sensorVal);
     setSensorMinMax(sensorVal,sensorMinVal,sensorMaxVal);
   }
+
 }
 
 int getLineUpdates() {
     readLineSensor(sensorVal);
     readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
     uint32_t linePos = getLinePosition(sensorCalVal,lineColor);
+    
     if (false) {
       for (int i = 0; i < 8; i++) {
         Serial.print(sensorVal[i]);

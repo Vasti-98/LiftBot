@@ -7,10 +7,14 @@ bool cmdSent = false;
 
 char cmd2[64] = {0};
 int cmd2Index = 0;
-
+#define BTDEBUG true
 //
 bool btOn = false; //
-bool getBtOn() {return btOn;}
+bool getBtOn() {
+  if (BTDEBUG) {
+    return true;
+  }
+  return btOn;}
 void setupBluetooth() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);

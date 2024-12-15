@@ -6,7 +6,7 @@
 unsigned long previousTime = 0;
 /*  LiftBot - autonomous line following and object sorting robot
  *   
- *   Integration code developed by Cheyenne Arnold
+ *   Integration code developed by Cheyenne Arnold, Vasti Orbach and Ethan Liang
  *   Motor encoding code done by Vasti Orbach
  *   Bluetooth communication code developed by Ethan Liang
  *   
@@ -49,7 +49,7 @@ unsigned long previousTime = 0;
 #define LF_RIGHT 21
 volatile int lineFollowState = LF_MID;
 
-
+volatile bool turnLonger = false;
 volatile int currentTarget = UNSORTED_BIN;
 volatile int lastTarget;
 volatile bool pastHalf = true;
@@ -67,6 +67,7 @@ volatile int preState = 99;
  */
 int handleStateTransition(int inState, int event) {
   if (event == BT_STOP_EVENT) {
+    Serial.println("btstop");
     return IDLE_STATE;
   }
   switch(inState) {
@@ -83,21 +84,21 @@ int handleStateTransition(int inState, int event) {
       break;  
       
     case IDLE_PICKUP_STATE:
+
       if ((event == RED_DETECTED_EVENT || event == BLUE_DETECTED_EVENT || event == GREEN_DETECTED_EVENT) && (currentTarget == UNSORTED_BIN && (pastHalf && returning))) { // color detected and expected pickup area
         lastTarget = UNSORTED_BIN;
-        if (lastColor == 1) {//red
+        if (event == RED_DETECTED_EVENT) {//red
           currentTarget = RED_BIN;
-        } else if (lastColor == 2) { //green
+        } else if (event == GREEN_DETECTED_EVENT) { //green
           currentTarget = GREEN_BIN;
-        } else if (lastColor == 3) {//blue
+        } else if (event == BLUE_DETECTED_EVENT) {//blue
           currentTarget = BLUE_BIN;
-        } else {
-          break;
-        }
+        } 
         Serial.println("RETURN PICKUP");
         return PICKUP_STATE;
       }
-      return inState;
+      Serial.println("retidlepickup");
+      return IDLE_PICKUP_STATE;
       break;
       
     case DRIVING_STATE:
@@ -128,7 +129,25 @@ int handleStateTransition(int inState, int event) {
           }
         } else if ((currentTarget == UNSORTED_BIN) && (returning && pastHalf)) { // left detected pickup line
           return IDLE_PICKUP_STATE;
-        } else {
+        } else if ((currentTarget == BLUE_BIN) && !returning) {
+            if (!pastHalf) {
+              pastHalf = true;
+              turnOnSlow();
+              delay(1500);
+              return inState;
+            } else {
+              return DROPPING_STATE;
+            }
+          } else if ((currentTarget == UNSORTED_BIN && lastTarget == BLUE_BIN) ) {
+            if (!pastHalf) {
+              pastHalf = true;
+              turnOnSlow();
+              delay(1500);
+              return inState;
+            } else {
+              return IDLE_PICKUP_STATE;
+            }
+          }else {
           return inState;
           }
       }
@@ -151,7 +170,23 @@ int handleStateTransition(int inState, int event) {
           }
         }else if ((currentTarget == UNSORTED_BIN) && (returning && pastHalf)){
             return IDLE_PICKUP_STATE;
-          } else {
+          } else if ((currentTarget == BLUE_BIN) && !returning) {
+            if (!pastHalf) {
+              pastHalf = true;
+              delay(1500);
+              return inState;
+            } else {
+              return DROPPING_STATE;
+            }
+          } else if ((currentTarget == UNSORTED_BIN && lastTarget == BLUE_BIN) ) {
+            if (!pastHalf) {
+              pastHalf = true;
+              delay(1500);
+              return inState;
+            } else {
+              return IDLE_PICKUP_STATE;
+            }
+          }else {
           return(inState);
           }
       }
@@ -188,6 +223,7 @@ int handleStateTransition(int inState, int event) {
       if (event == PICKUP_FINISHED_EVENT) {
         pastHalf = false;
         returning = false;
+        turnLonger = false;
         return T180_STATE;
       }
     case DROPPING_STATE: // not working
@@ -198,6 +234,7 @@ int handleStateTransition(int inState, int event) {
         }
         pastHalf = false;
         returning = true;
+        turnLonger = true;
         return T180_STATE;
       }
       break;
@@ -269,21 +306,15 @@ int counter = 0;
 void loop() {
   
   if (DEBUGGING) {
-    if (true) {
-      pickUpObject();
-      delay(3000);
-      dropUpObject();
-      delay(3000);
-    }
-
+    printMinMax();
     /*
     Serial.println("start");
     currentState = handleStateTransition(currentState, BT_START_EVENT);
     printState(currentState, true);
     
     lastColor  = 1;
-    currentState = handleStateTransition(currentState, RED_DETECTED_EVENT);
-    Serial.println("red detected");
+    currentState = handleStateTransition(currentState, BLUE_DETECTED_EVENT);
+    Serial.println("blue detected");
     printState(currentState, true);
 
     currentState = handleStateTransition(currentState, PICKUP_FINISHED_EVENT);
@@ -299,45 +330,25 @@ void loop() {
     printState(currentState, true);
 
     currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
-    Serial.println("Lline detected, turn left");
+    Serial.println("Lline detected, STOP");
+    printState(currentState, true);
+
+    currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
+    Serial.println("Drop finished");
     printState(currentState, true);
 
     currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
-    Serial.println("Turn finished");
+    Serial.println("Turnaround finished");
     printState(currentState, true);
 
     currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
-    Serial.println("Stop line detected");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
-    Serial.println("Drop done");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
-    Serial.println("Double event redundancy check");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
-    Serial.println("Turn finished");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, RLINE_DETECTED_EVENT);
-    Serial.println("Turn right line detected");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
-    Serial.println("Turn Finished");
+    Serial.println("mid detection");
     printState(currentState, true);
 
     currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
-    Serial.println("Stop line detected");
+    Serial.println("Idle pickup");
     printState(currentState, true);
 
-    currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
-    Serial.println("Dropped, should be idle");
-    printState(currentState, true);
-    
     Serial.println("end");
     delay(2000);
     */
@@ -362,7 +373,7 @@ void loop() {
     
   } else { //THE LOOOOOOOOOOOOOOOP
     // printing
-    if (counter == 50) {
+    if (counter == 2) {
       printState(currentState, true);
       counter = 0;
     } else {
@@ -388,13 +399,16 @@ void loop() {
       tcolor = getColorSamples();
       switch (tcolor) {
         case 1:
+        Serial.println("red box detected");
           currentState = handleStateTransition(currentState, RED_DETECTED_EVENT);
           break;
         case 2:
           currentState = handleStateTransition(currentState, GREEN_DETECTED_EVENT);
+        Serial.println("green box detected");
           break;
         case 3:
-          currentState = handleStateTransition(currentState, BT_START_EVENT);
+          currentState = handleStateTransition(currentState, BLUE_DETECTED_EVENT);
+        Serial.println("blue box detected");
           break;
       }
       break;
@@ -407,6 +421,7 @@ void loop() {
         currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
       } else if (lineUpdates == 2) {
         driveInit = false;
+        delay(500);
         stopWheels();
         currentState = handleStateTransition(currentState, RLINE_DETECTED_EVENT);
       }
@@ -419,7 +434,7 @@ void loop() {
       currentState = handleStateTransition(currentState, PICKUP_FINISHED_EVENT);
       break;
     case DROPPING_STATE:
-      //dropping sequence
+      Serial.println("DroppingSequence");
       dropUpObject();
       
       delay(500);//servo code in here  , delete delay afterwards
@@ -434,7 +449,7 @@ void loop() {
       turnLeft();
       delay(50);
       turnOnSlow();
-      delay(1500);
+      delay(2500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
       break;
     case T90_RIGHT_STATE:
@@ -444,16 +459,16 @@ void loop() {
       turnRight();
       delay(50);
       turnOnSlow();
-      delay(1500);
+      delay(2500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
     case T180_STATE:
       Serial1.write("TURNING 180");
       stopWheels();
       delay(50);
-      turnAround();
+      turnAround(turnLonger);
       delay(50);
       turnOnSlow();
-      delay(1500);
+      delay(2500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
     }
   }
@@ -462,7 +477,10 @@ void loop() {
 
 void pickUpObject() {
     backPickUp();
-    servo_left.write(60);
+    for (int pos = 90; pos >= 60; pos -= 1) {  // goes from 0 degrees to 70 in 1 degree steps
+      servo_left.write(pos);              // tell servo to go to position in variable 'pos'
+      delay(20);                       // waits 15ms for the servo to reach the position
+    };
     gripper.writeMicroseconds(500);//ensures right 
     delay(4000);
     gripper.writeMicroseconds(900);
@@ -474,13 +492,15 @@ void pickUpObject() {
 }
 
 void dropUpObject() {
-  servo_left.write(90);
+  //servo_left.write(90);
   delay(1000);
   gripper.writeMicroseconds(900);
-  for(int pos = 90; pos >=60;pos-=1)     // goes from 180 degrees to 0 degrees
+  /*for(int pos = 90; pos >=60;pos-=1)     // goes from 180 degrees to 0 degrees
   {
     servo_left.write(pos);              // tell servo to go to position in variable 'pos'
     delay(15);                       // waits 15ms for the servo to reach the position
   }
+  */
+  delay(500);
   gripper.writeMicroseconds(500);
 } 

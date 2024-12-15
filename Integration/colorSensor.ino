@@ -25,9 +25,9 @@ int BLUE = 3;
 
 // constants - adjust if getting poor readings
 const int Rc = 100;                      // Clear Relative Responsivity 
-const int Rr = 93;                       // Red Relative Responsivity 
-const int Rg = 85;                       // Green Relative Responsivity 
-const int Rb = 85;                       // Blue Relative Responsivity 
+const int Rr = 85;                       // Red Relative Responsivity 
+const int Rg = 82;                       // Green Relative Responsivity 
+const int Rb = 84;                       // Blue Relative Responsivity 
 int rcount;
 int gcount;
 int bcount;
@@ -52,7 +52,6 @@ int getColorSamples() {
         break;
     }
   }
-    Serial.println(bcount);
     if (rcount * 3 > SAMPLES) {
       return RED;
     }
@@ -112,14 +111,14 @@ int getColor(){
   int g;
   int b;
   int classify = maxDelta(Cr, Cg, Cb);
-  if (true) {
-//    Serial.println("RGB");
-//    Serial.print(Cr);
-//    Serial.print(" ");
-//    Serial.print(Cg);
-//    Serial.print(" ");
-//    Serial.print(Cb);
-//    Serial.print(" ");
+  if (false) {
+    Serial.println("RGB");
+    Serial.print(Cr);
+    Serial.print(" ");
+    Serial.print(Cg);
+    Serial.print(" ");
+    Serial.print(Cb);
+    Serial.print(" ");
   }
   if (classify != 0) {
     if (classify == RED) {
@@ -133,42 +132,26 @@ int getColor(){
       return BLUE;
     }
   } else {
-    //Serial.println("No color");
+    if (printy) {Serial.println("No color");}
     return 0;
   }}
 
-const int delta = 10000;
+const int delta = 15000;
   int maxDelta(int rF, int gF, int bF) {
 
-  if (abs(rF - gF) > delta) {
-      if (rF < gF){
-          lastColor = RED;
-          return RED;
-        } else {
-          lastColor = GREEN;
-          return GREEN;
-        }
-    } else if (abs(rF - bF) > delta) {
-      if (rF < bF) {
-        lastColor = RED;
-        return RED;
-    } else {
-      lastColor = BLUE;
-      return BLUE;
-      }
-    } else if (abs(gF - bF) > delta){
-      if (gF < bF) {
+  if ((abs(rF - gF) > delta) || (abs(rF-bF) > delta) || (abs(bF-gF) > delta)) {
+if ((rF < gF) && (rF < bF)){
+         lastColor = RED;
+         return RED;
+    } else if ((gF < rF) && (gF < bF)) {
         lastColor = GREEN;
         return GREEN;
-      } else if (gF > bF){ //changed this logic
+    } else if ((bF < rF) && (bF < gF)) {
         lastColor = BLUE;
         return BLUE;
-      }
-    } else {
-          lastColor = 0;
-    return 0;
-      
     }
+  }
+  return 0;
   }
 void setupColor()
 {

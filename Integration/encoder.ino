@@ -1,9 +1,15 @@
+#include "SimpleRSLK.h"
 #include "encoder.h"
-
+uint16_t slowSpeed = 5;
+  uint16_t normalSpeed = 10;
+  uint16_t fastSpeed = 20;
 void setupEncoder(){
   // Initialize serial for debugging
   /**to find certain pins look at RSLK_PIN*/
   setupEncoder(ENCODER_ELA_PIN,ENCODER_ELB_PIN, ENCODER_ERA_PIN, ENCODER_ERB_PIN);
+    enableMotor(BOTH_MOTORS);
+      setMotorDirection(BOTH_MOTORS,MOTOR_DIR_FORWARD);  /* Enable both motors */
+
   //initialize the motors
   left_m.begin(31,29,40);
   right_m.begin(11, 30,39);
@@ -30,23 +36,34 @@ void updateLineFollower() {
     readLineSensor(sensorVal);
     readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
     uint32_t linePos = getLinePosition(sensorCalVal,lineColor);
-  if(linePos > 3000 && linePos < 3250) {
+      if(linePos > 0 && linePos < 3000) {
+    setMotorSpeed(LEFT_MOTOR,normalSpeed);
+    setMotorSpeed(RIGHT_MOTOR,fastSpeed);
+  } else if(linePos > 3500) {
+    setMotorSpeed(LEFT_MOTOR,fastSpeed);
+    setMotorSpeed(RIGHT_MOTOR,normalSpeed);
+  } else {
+    setMotorSpeed(LEFT_MOTOR,normalSpeed);
+    setMotorSpeed(RIGHT_MOTOR,normalSpeed);
+  }
+ /* if(linePos > 3200 && linePos < 3400) {
+      left_m.setSpeed(10);
+      right_m.setSpeed(12);
+  } else if(linePos > 3600 && linePos < 3800) {
+      left_m.setSpeed(12);
+      right_m.setSpeed(10);
+  } else if (linePos < 3200){
       left_m.setSpeed(10);
       right_m.setSpeed(15);
-  } else if(linePos > 3750 && linePos < 4000) {
+  }else if (linePos > 3800){
       left_m.setSpeed(15);
-      right_m.setSpeed(10);
-  } else if (linePos < 3000){
-      left_m.setSpeed(10);
-      right_m.setSpeed(20);
-  }else if (linePos > 4000){
-      left_m.setSpeed(20);
       right_m.setSpeed(10);    
   }
   else {
       left_m.setSpeed(10);
       right_m.setSpeed(10);  
   }
+  */
 }
 
 void turnOn(){
@@ -72,12 +89,12 @@ void stopWheels() {
   right_m.setSpeed(0);
 }
 
-void turnAround(){
+void turnAround(bool longer){
   left_m.directionBackward();
   right_m.directionForward();
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
-  delay(1900);//prev 2060
+  if (longer) {delay(2200);} else {delay(2000);}
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
