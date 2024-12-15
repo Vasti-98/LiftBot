@@ -1,8 +1,11 @@
 #include "SimpleRSLK.h"
 #include "encoder.h"
-uint16_t slowSpeed = 5;
-  uint16_t normalSpeed = 10;
+uint16_t slowSpeed = 10;
+uint16_t slightSpeed = 12;
+  uint16_t normalSpeed = 14;
   uint16_t fastSpeed = 20;
+  volatile int linePosition = 3500;
+  volatile int lastLinePosition= 3500;
 void setupEncoder(){
   // Initialize serial for debugging
   /**to find certain pins look at RSLK_PIN*/
@@ -32,21 +35,97 @@ void lineFollowHelper(int lineFollowState){
       right_m.setSpeed(15);      
   }
 }
+int getMaxIndex() {
+      readLineSensor(sensorVal);
+    readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
+
+    int maxIndex = 0;
+    for (int i = 0; i < 8; i++) {
+        if (sensorVal[i] > sensorVal[maxIndex]) {
+            maxIndex = i;
+        }
+    }
+    return maxIndex;
+
+}
 void updateLineFollower() {
+  
     readLineSensor(sensorVal);
     readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
-    uint32_t linePos = getLinePosition(sensorCalVal,lineColor);
-      if(linePos > 0 && linePos < 3000) {
+    linePosition = getLinePosition(sensorCalVal,lineColor);
+
+    int lineDelta = linePosition - lastLinePosition;
+
+    int maximo = getMaxIndex();
+
+    if ((linePosition > 3400) && (linePosition < 3450)) {
+        setMotorSpeed(LEFT_MOTOR, slowSpeed);
+        setMotorSpeed(RIGHT_MOTOR, 11);
+        
+    } else if ((linePosition > 3550) && (linePosition < 3600)) {
+         setMotorSpeed(LEFT_MOTOR, 11);
+        setMotorSpeed(RIGHT_MOTOR, slowSpeed);
+     } else  if ((linePosition > 3450) && linePosition < 3550) {
+        setMotorSpeed(RIGHT_MOTOR, slowSpeed);
+        setMotorSpeed(RIGHT_MOTOR, slowSpeed);
+      } else {
+    switch(maximo) {
+      case 0:
+        setMotorSpeed(LEFT_MOTOR, slowSpeed);
+        setMotorSpeed(RIGHT_MOTOR, fastSpeed);
+        break;
+      case 1:
+        setMotorSpeed(LEFT_MOTOR, slowSpeed);
+        setMotorSpeed(RIGHT_MOTOR, normalSpeed);
+        break;
+      case 2:
+        setMotorSpeed(LEFT_MOTOR, slowSpeed);
+        setMotorSpeed(RIGHT_MOTOR, normalSpeed);
+        break;
+      case 3:
+        setMotorSpeed(LEFT_MOTOR, slowSpeed);
+        setMotorSpeed(RIGHT_MOTOR, slightSpeed);
+        break;
+      case 4:
+        setMotorSpeed(LEFT_MOTOR, slightSpeed);
+        setMotorSpeed(RIGHT_MOTOR, slowSpeed);
+        break;
+      case 5:
+        setMotorSpeed(LEFT_MOTOR, normalSpeed);
+        setMotorSpeed(RIGHT_MOTOR, slowSpeed);
+        break;
+      case 6:
+        setMotorSpeed(LEFT_MOTOR, normalSpeed);
+        setMotorSpeed(RIGHT_MOTOR, slowSpeed);
+        break;
+      case 7:
+        setMotorSpeed(LEFT_MOTOR, fastSpeed);
+        setMotorSpeed(RIGHT_MOTOR, slowSpeed);
+        break;
+    }
+    }
+    lastLinePosition = linePosition;
+
+    
+     /* 
+     * OLD STRAT
+      if(linePos >= 2500 && linePos < 3000) {
     setMotorSpeed(LEFT_MOTOR,normalSpeed);
+    setMotorSpeed(RIGHT_MOTOR,slowSpeed);
+  } else if(linePos >= 3500 && linePos < 4000) {
+    setMotorSpeed(LEFT_MOTOR,slowSpeed);
     setMotorSpeed(RIGHT_MOTOR,fastSpeed);
-  } else if(linePos > 3500) {
+  } else if (linePos >= 4000) {
+    setMotorSpeed(LEFT_MOTOR,slowSpeed);
+    setMotorSpeed(RIGHT_MOTOR,fastSpeed);
+  } else if (linePos < 2500) {
     setMotorSpeed(LEFT_MOTOR,fastSpeed);
-    setMotorSpeed(RIGHT_MOTOR,normalSpeed);
+    setMotorSpeed(RIGHT_MOTOR,slowSpeed);
   } else {
-    setMotorSpeed(LEFT_MOTOR,normalSpeed);
-    setMotorSpeed(RIGHT_MOTOR,normalSpeed);
+    setMotorSpeed(LEFT_MOTOR,slowSpeed);
+    setMotorSpeed(RIGHT_MOTOR,slowSpeed);
   }
- /* if(linePos > 3200 && linePos < 3400) {
+  if(linePos > 3200 && linePos < 3400) {
       left_m.setSpeed(10);
       right_m.setSpeed(12);
   } else if(linePos > 3600 && linePos < 3800) {
@@ -94,7 +173,7 @@ void turnAround(bool longer){
   right_m.directionForward();
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
-  if (longer) {delay(2200);} else {delay(2000);}
+  if (longer) {delay(2200);} else {delay(2200);}
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
@@ -115,8 +194,9 @@ void turnLeft(){
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
   delay(1100);
-  left_m.setSpeed(0); 
-  right_m.setSpeed(0);
+  left_m.setSpeed(10); 
+  right_m.setSpeed(10);
+  delay(1000);
   left_m.directionForward();
 }
 

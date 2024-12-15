@@ -69,10 +69,12 @@ int getLineUpdates() {
       }
       Serial.println();
     }
-    if (sensorVal[7] > 2000) {
+    if (sensorVal[7] > 2000 && sensorVal[6] > 2000) {
+      Serial.println("Right Line");
       return 2; //right most sensor dark
     }
-    if (sensorVal[0] > 2000) {
+    if (sensorVal[0] > 2000 && sensorVal[1] > 2000) {
+      Serial.println("Left Line");
       return 1; //left most sensor dark
     }
     return 0;

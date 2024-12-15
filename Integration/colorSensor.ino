@@ -64,7 +64,7 @@ int getColorSamples() {
     return 0;
   }
 
-int getLastColor(){return lastColor;}
+
 int getColor(){
   
   digitalWrite(S2, HIGH);                // get ready to read clear
@@ -111,7 +111,7 @@ int getColor(){
   int g;
   int b;
   int classify = maxDelta(Cr, Cg, Cb);
-  if (false) {
+  if (true) {
     Serial.println("RGB");
     Serial.print(Cr);
     Serial.print(" ");
@@ -136,18 +136,18 @@ int getColor(){
     return 0;
   }}
 
-const int delta = 15000;
+const int delta = 25000;
   int maxDelta(int rF, int gF, int bF) {
 
   if ((abs(rF - gF) > delta) || (abs(rF-bF) > delta) || (abs(bF-gF) > delta)) {
 if ((rF < gF) && (rF < bF)){
-         lastColor = RED;
+
          return RED;
     } else if ((gF < rF) && (gF < bF)) {
-        lastColor = GREEN;
+
         return GREEN;
     } else if ((bF < rF) && (bF < gF)) {
-        lastColor = BLUE;
+
         return BLUE;
     }
   }
@@ -173,80 +173,3 @@ void setupColor()
 void loopColor() {
 
 }
-void otherColor(){//this is loopColor()
-  //------------------ Read raw values and correct them ----------------------
-  digitalWrite(S2, HIGH);                // get ready to read clear
-  digitalWrite(S3, LOW);
-  int cPulse = pulseIn(outPin, LOW);     // read clear
-  /*
-  Serial.print("C pulse = ");
-  Serial.println(cPulse);            
-  */
-  int Ac = cPulse * Rc;                  // adjust reading for responsiveness
-  
-  digitalWrite(S2, LOW);                 // get ready to read red
-  digitalWrite(S3, LOW);
-  int rPulse = pulseIn(outPin, LOW);
-  /*// read red    
-  Serial.print("R pulse = ");
-  Serial.println(rPulse);
-  */
-  int Ar = rPulse * Rr;                  // adjust reading for responsiveness
-  int Cr = Ar - Ac;                      // correct for clear reading
-  
-  digitalWrite(S2, HIGH);                // get ready to read green
-  digitalWrite(S3, HIGH);
-  int gPulse = pulseIn(outPin, LOW);     // read green
-  /*
-  Serial.print("G pulse = ");
-  Serial.println(gPulse);
-  */
-  int Ag = gPulse * Rg;                  // adjust reading for responsiveness                  
-  int Cg = Ag - Ac;                      // correct for clear reading
-    
-  digitalWrite(S2, LOW);                 // get ready to read blue
-  digitalWrite(S3, HIGH);
-  int bPulse = pulseIn(outPin, LOW);     // read blue
-  /*
-  Serial.print("B pulse = ");
-  Serial.println(bPulse);
-  */
-  int Ab = bPulse * Rb;                  // adjust reading for responsiveness
-  int Cb = Ab - Ac;                      // correct for clear reading
-
-
-  int r;
-  int g;
-  int b;
-  int classify = maxDelta(rPulse, gPulse, bPulse);
-  if (classify != 0) {
-    if (classify == RED) {
-      //Serial.println("red");
-      lastColor = RED;
-    } else if (classify == GREEN) {
-      //Serial.println("green");
-      lastColor = GREEN;
-    } else {
-      //Serial.println("blue");
-      lastColor = BLUE;
-    }
-  } else {
-    //Serial.println("No color");
-    lastColor = 0;
-  }
-
-  
-
-  //----------------------------------- Output ------------------------------------
-  /*
-  Serial.println("");
-  Serial.print("r = "); Serial.println(r);
-  Serial.print("g = "); Serial.println(g);
-  Serial.print("b = "); Serial.println(b); 
-  Serial.println(""); 
-  analogWrite(RED_LED, r);
-  analogWrite(GREEN_LED, g);
-  analogWrite(BLUE_LED, b);
-  delay(1000);  
-  */
-} 
