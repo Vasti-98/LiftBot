@@ -483,4 +483,6 @@ void dropUpObject() {
     delay(15);                       // waits 15ms for the servo to reach the position
   }
   gripper.writeMicroseconds(500);
+  
+  backPickUp();
 } 
