@@ -107,11 +107,6 @@ int handleStateTransition(int inState, int event) {
             return IDLE_PICKUP_STATE; // Left side detected pickup line
           } else {
             pastHalf = true;
-
-            
-            Serial.println("Going Green to Unsorted");
-
-            
             return T90_LEFT_STATE; // Left turn going from green to unsorted
           }
         } else if ((currentTarget == RED_BIN && lastTarget == UNSORTED_BIN) && !returning){
@@ -119,11 +114,6 @@ int handleStateTransition(int inState, int event) {
             return DROPPING_STATE; // Left side detected droppoff line
           } else {
             pastHalf = true;
-            
-            
-            Serial.println("Going Unsorted to Red");
-            
-            
             return T90_LEFT_STATE; // Left turn going from unsorted to red;
           }
         } else if ((currentTarget == UNSORTED_BIN) && (returning && pastHalf)) { // left detected pickup line
@@ -269,80 +259,25 @@ int counter = 0;
 void loop() {
   
   if (DEBUGGING) {
-    if (true) {
-      pickUpObject();
-      delay(3000);
-      dropUpObject();
-      delay(3000);
-    }
+//      Serial.println("run");
+      
 
-    /*
-    Serial.println("start");
-    currentState = handleStateTransition(currentState, BT_START_EVENT);
-    printState(currentState, true);
-    
-    lastColor  = 1;
-    currentState = handleStateTransition(currentState, RED_DETECTED_EVENT);
-    Serial.println("red detected");
-    printState(currentState, true);
+//      stopWheels();
+//      delay(50);
+//      turnAround();
+//      delay(50);
+//      turnOnSlow();
+//      delay(1500);
+//
+//      stopWheels();
+//      delay(50);
+//      turnAround();
+//      delay(50);
+//      turnOnSlow();
+//      delay(1500);
+//      
 
-    currentState = handleStateTransition(currentState, PICKUP_FINISHED_EVENT);
-    Serial.println("pickup finished");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
-    Serial.println("turn finished");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, RLINE_DETECTED_EVENT);
-    Serial.println("Rline detected, should not turn");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
-    Serial.println("Lline detected, turn left");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
-    Serial.println("Turn finished");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
-    Serial.println("Stop line detected");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
-    Serial.println("Drop done");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
-    Serial.println("Double event redundancy check");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
-    Serial.println("Turn finished");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, RLINE_DETECTED_EVENT);
-    Serial.println("Turn right line detected");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
-    Serial.println("Turn Finished");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
-    Serial.println("Stop line detected");
-    printState(currentState, true);
-
-    currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
-    Serial.println("Dropped, should be idle");
-    printState(currentState, true);
-    
-    Serial.println("end");
-    delay(2000);
-    */
   } else if (DEMO) {
-//    Serial.print(1);
     
     updateLineFollower();
     lineUpdates = getLineUpdates();
@@ -378,6 +313,7 @@ void loop() {
   if (!btval) { //check for bluetooth shutdown
     currentState = handleStateTransition(currentState, BT_STOP_EVENT);
     }
+    
   switch(currentState) {
     case IDLE_STATE:
       if (btval) {
@@ -446,6 +382,7 @@ void loop() {
       turnOnSlow();
       delay(1500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
+      break;
     case T180_STATE:
       Serial1.write("TURNING 180");
       stopWheels();
@@ -455,6 +392,7 @@ void loop() {
       turnOnSlow();
       delay(1500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
+      break;
     }
   }
 }

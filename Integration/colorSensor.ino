@@ -1,4 +1,4 @@
-/* Adopted from Frank Milburn, originally written 7 August 2015
+  /* Adopted from Frank Milburn, originally written 7 August 2015
  * 
  * https://github.com/fmilburn3/TCS3200_colorSensor/blob/master/TCS3200_colorSensor.ico
  * 
