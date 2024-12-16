@@ -35,21 +35,21 @@ void updateLineFollower() {
     // Decision logic based on updated thresholds
     if (centerSum > 5500 && leftSum < 3000 && rightSum < 1500) {
         // Line is centered
-        Serial.println("Centered");
-        straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt());
+//        Serial.println("----------Centered");
+        straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),14);
     } else if (leftSum > rightSum) {
         // Line is leaning to the left
-        Serial.println("Left");
+//        Serial.println("----------Left");
         left_m.setSpeed(10);
         right_m.setSpeed(20);
     } else if (rightSum > leftSum) {
         // Line is leaning to the right
-        Serial.println("Right");
+//        Serial.println("----------Right");
         left_m.setSpeed(20);
         right_m.setSpeed(10);
     } else {
         // Default case (uncertain or lost line)
-        Serial.println("Lost line");
+        Serial.println("----------Lost line---------");
         left_m.setSpeed(0);
         right_m.setSpeed(0);
     }

@@ -20,12 +20,14 @@ void lineSetup()
   /* Red led in rgb led */
   setupLed(RED_LED);
   clearMinMax(sensorMinVal,sensorMaxVal);
+  floorCalibration();
 }
 
 void floorCalibration() {
   /* Place Robot On Floor (no line) */
   Serial.println("Running calibration on floor");
-  for(int x = 0;x<100;x++){
+  delay(5000);
+  for(int x = 0; x < 100; x++){
     readLineSensor(sensorVal);
     setSensorMinMax(sensorVal,sensorMinVal,sensorMaxVal);
   }
@@ -35,7 +37,6 @@ void floorCalibration() {
 int getLineUpdates() {
     readLineSensor(sensorVal);
     readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
-    uint32_t linePos = getLinePosition(sensorCalVal,lineColor);
     if (false) {
       for (int i = 0; i < 8; i++) {
         Serial.print(sensorVal[i]);
