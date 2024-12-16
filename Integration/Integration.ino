@@ -293,30 +293,33 @@ char handleStateTransition(char inState, int event) {
 
 void printState(int state, bool vars) {
   switch (state) {
-      Serial.print("----------STATE--------: ");
     case IDLE_STATE:
+<<<<<<< HEAD
       Serial.println("Idle State");
+=======
+      Serial.println("----STATE----: Idle State");
+>>>>>>> 4586be88b5763aeca173989ab5075e5a75ac50f7
       break;
     case DRIVING_STATE:
-      Serial.println("Driving State");
+      Serial.println("----STATE----: Driving State");
       break;
     case PICKUP_STATE:
-      Serial.println("Pickup State");
+      Serial.println("----STATE----: Pickup State");
       break;
     case T90_LEFT_STATE:
-      Serial.println("Turn Left State");
+      Serial.println("----STATE----: Turn Left State");
       break;
     case T90_RIGHT_STATE:
-      Serial.println("Turn Right State");
+      Serial.println("----STATE----: Turn Right State");
       break;
     case DROPPING_STATE:
-      Serial.println("Dropping State");
+      Serial.println("----STATE----: Dropping State");
       break;
     case T180_STATE:
-      Serial.println("Turn Around State");
+      Serial.println("----STATE----: Turn Around State");
       break;    
     case IDLE_PICKUP_STATE:
-      Serial.println("Idle Pickup State");
+      Serial.println("----STATE----: Idle Pickup State");
       break;
       }
       if (vars) {
@@ -358,7 +361,13 @@ int counter = 0;
 void loop() {
   
   if (DEBUGGING) {
+<<<<<<< HEAD
     milT = millis();
+=======
+    straight();
+
+    /*
+>>>>>>> 4586be88b5763aeca173989ab5075e5a75ac50f7
     Serial.println("start");
 
     currentState = IDLE_PICKUP_STATE;
@@ -510,7 +519,7 @@ void loop() {
       stopWheels();
       pickUpObject();
       delay(500);
-      Serial.println("PickedUp");
+      Serial.println("STATUS: PickedUp");
       currentState = handleStateTransition(currentState, PICKUP_FINISHED_EVENT);
       break;
     case DROPPING_STATE:
@@ -519,12 +528,12 @@ void loop() {
       dropUpObject();
       
       delay(500);//servo code in here  , delete delay afterwards
-      Serial.println("Dropped");
+      Serial.println("STATUS: Dropped");
       currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
       break;
       
     case T90_LEFT_STATE:
-      Serial1.write("TURNING 90 LEFT");
+      Serial.println("STATUS: TURNING 90 LEFT");
       stopWheels();
       delay(50);
       turnLeft();
@@ -534,7 +543,7 @@ void loop() {
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
       break;
     case T90_RIGHT_STATE:
-      Serial1.write("TURNING 90 RIGHT");
+      Serial.println("STATUS: TURNING 90 RIGHT");
       stopWheels();
       delay(50);
       turnRight();
@@ -543,8 +552,9 @@ void loop() {
       delay(1200);
       Serial.println("postdelay");
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
+      break;
     case T180_STATE:
-      Serial1.write("TURNING 180");
+      Serial.println("STATUS: TURNING 180");
       stopWheels();
       delay(50);
       turnAround(turnLonger);
@@ -552,6 +562,7 @@ void loop() {
       turnOnSlow();
       delay(500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
+      break;
     }
   }
 }
@@ -565,7 +576,7 @@ void pickUpObject() {
     };
     gripper.writeMicroseconds(500);//ensures right 
     delay(4000);
-    gripper.writeMicroseconds(900);
+    gripper.writeMicroseconds(1000);
     for (int pos = 60; pos < 91; pos += 1) {  // goes from 0 degrees to 70 in 1 degree steps
       servo_left.write(pos);              // tell servo to go to position in variable 'pos'
       delay(20);                       // waits 15ms for the servo to reach the position
@@ -576,8 +587,13 @@ void pickUpObject() {
 void dropUpObject() {
   //servo_left.write(90);
   delay(1000);
+<<<<<<< HEAD
   gripper.writeMicroseconds(900);
   /*for(int pos = 90; pos >=60;pos-=1)     // goes from 180 degrees to 0 degrees
+=======
+  gripper.writeMicroseconds(1000);
+  for(int pos = 90; pos >=60;pos-=1)     // goes from 180 degrees to 0 degrees
+>>>>>>> 4586be88b5763aeca173989ab5075e5a75ac50f7
   {
     servo_left.write(pos);              // tell servo to go to position in variable 'pos'
     delay(15);                       // waits 15ms for the servo to reach the position
@@ -585,4 +601,7 @@ void dropUpObject() {
   */
   delay(500);
   gripper.writeMicroseconds(500);
+  delay(1000);
+  servo_left.write(90);
+  backPickUp();
 } 

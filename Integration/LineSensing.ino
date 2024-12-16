@@ -15,7 +15,6 @@ uint16_t sensorMinVal[LS_NUM_SENSORS];
 uint8_t lineColor = DARK_LINE;
 void lineSetup()
 {
-
   setupRSLK();
   /* Left button on Launchpad */
   /* Red led in rgb led */
@@ -26,9 +25,8 @@ void lineSetup()
 
 void floorCalibration() {
   /* Place Robot On Floor (no line) */
-
-
   Serial.println("Running calibration on floor");
+<<<<<<< HEAD
   simpleCalibrate();
   Serial.println("Reading floor values complete");
 
@@ -55,13 +53,24 @@ void simpleCalibrate() {
     setSensorMinMax(sensorVal,sensorMinVal,sensorMaxVal);
   }
 
+=======
+  delay(5000);
+  for(int x = 0; x < 100; x++){
+    readLineSensor(sensorVal);
+    setSensorMinMax(sensorVal,sensorMinVal,sensorMaxVal);
+  }
+  Serial.println("Reading floor values complete");
+>>>>>>> 4586be88b5763aeca173989ab5075e5a75ac50f7
 }
 
 int getLineUpdates() {
     readLineSensor(sensorVal);
     readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
+<<<<<<< HEAD
     uint32_t linePos = getLinePosition(sensorCalVal,lineColor);
     
+=======
+>>>>>>> 4586be88b5763aeca173989ab5075e5a75ac50f7
     if (false) {
       for (int i = 0; i < 8; i++) {
         Serial.print(sensorVal[i]);
