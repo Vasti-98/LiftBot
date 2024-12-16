@@ -40,16 +40,16 @@ void updateLineFollower() {
 //        Serial.println("----------Centered");
 //        left_m.setSpeed(15);
 //        right_m.setSpeed(15);
-        straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),14);
+        straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),12);
     } else if (leftSum > rightSum) {
         // Line is leaning to the left
 //        Serial.println("----------Left");
         left_m.setSpeed(10);
-        right_m.setSpeed(15);
+        right_m.setSpeed(13);
     } else if (rightSum > leftSum) {
         // Line is leaning to the right
 //        Serial.println("----------Right");
-        left_m.setSpeed(15);
+        left_m.setSpeed(13);
         right_m.setSpeed(10);
     } else {
         // Default case (uncertain or lost line)
@@ -76,9 +76,7 @@ void turnOff(){
   right_m.disableMotor();
 }
 void turnOnSlow(){
-    // Print message for debugging
-  left_m.setSpeed(10); 
-  right_m.setSpeed(10); 
+  straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),9);
 }
 void stopWheels() {
   left_m.setSpeed(0);
@@ -90,7 +88,14 @@ void turnAround(){
   right_m.directionForward();
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
-  delay(3300);//prev 2060
+
+  delay(1500);//prev 2060
+  readLineSensor(sensorVal);
+  while ((sensorVal[3] < 2000) && (sensorVal[5] < 2000)) {
+     Serial.println("TURNING");
+     readLineSensor(sensorVal);
+  }
+  
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
@@ -110,7 +115,12 @@ void turnLeft(){
   right_m.directionForward();
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
-  delay(1800);
+  
+  delay(1000);
+  readLineSensor(sensorVal);
+  while (sensorVal[5] < 2000) {
+      readLineSensor(sensorVal);
+  }
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
@@ -121,10 +131,17 @@ void turnRight(){
   left_m.directionForward();
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
-  delay(1800);
+  
+  delay(1000);
+  readLineSensor(sensorVal);
+  while (sensorVal[2] < 2000) {
+      readLineSensor(sensorVal);
+  } 
+  
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   right_m.directionForward();
+
 }
 
 void straightFeedback(uint32_t tickR, uint32_t tickL,int speed){
@@ -152,14 +169,14 @@ void straightFeedback(uint32_t tickR, uint32_t tickL,int speed){
   rightSpeed = constrain(rightSpeed, 0, 255);
 
   //debugg
-  Serial.print("Diff: ");
-  Serial.print(diff);
-  Serial.print(" | Correction: ");
-  Serial.print(correct);
-  Serial.print(" | Left Speed: ");
-  Serial.print(leftSpeed);
-  Serial.print(" | Right Speed: ");
-  Serial.println(rightSpeed);
+//  Serial.print("Diff: ");
+//  Serial.print(diff);
+//  Serial.print(" | Correction: ");
+//  Serial.print(correct);
+//  Serial.print(" | Left Speed: ");
+//  Serial.print(leftSpeed);
+//  Serial.print(" | Right Speed: ");
+//  Serial.println(rightSpeed);
   //setting the speeds
   left_m.setSpeed(leftSpeed);
   right_m.setSpeed(rightSpeed);
@@ -198,7 +215,7 @@ void backFeedback(uint32_t tickR, uint32_t tickL, int speed){
 
 
 void straight() {
-  straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),14);
+  straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),12);
   return;
 }
 
