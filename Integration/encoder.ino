@@ -13,41 +13,50 @@ void setupEncoder(){
   resetRightEncoderCnt();
 }
 
-void lineFollowHelper(int lineFollowState){
-  switch (lineFollowState){
-    case LF_LEFT:
-      left_m.setSpeed(30);
-      right_m.setSpeed(10);
-    case LF_MID:
-      left_m.setSpeed(10);
-      right_m.setSpeed(10);
-    case LF_RIGHT:
-      left_m.setSpeed(10);
-      right_m.setSpeed(15);      
-  }
-}
+
 void updateLineFollower() {
+    // Read line sensor data
     readLineSensor(sensorVal);
-    readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
-    uint32_t linePos = getLinePosition(sensorCalVal,lineColor);
-  if(linePos > 3000 && linePos < 3250) {
-      left_m.setSpeed(10);
-      right_m.setSpeed(15);
-  } else if(linePos > 3750 && linePos < 4000) {
-      left_m.setSpeed(15);
-      right_m.setSpeed(10);
-  } else if (linePos < 3000){
-      left_m.setSpeed(10);
-      right_m.setSpeed(20);
-  }else if (linePos > 4000){
-      left_m.setSpeed(20);
-      right_m.setSpeed(10);    
-  }
-  else {
-      left_m.setSpeed(10);
-      right_m.setSpeed(10);  
-  }
+    //readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor); //returns sensorCalVal
+
+    // Calculate sums for decision-making
+    int centerSum = sensorVal[3] + sensorVal[4] + sensorVal[5];
+    int leftSum = sensorVal[0] + sensorVal[1] + sensorVal[2];
+    int rightSum = sensorVal[6] + sensorVal[7];
+
+//    // Debugging: Print the sums for verification
+//    Serial.print("CenterSum: ");
+//    Serial.print(centerSum);
+//    Serial.print("\tLeftSum: ");
+//    Serial.print(leftSum);
+//    Serial.print("\tRightSum: ");
+//    Serial.println(rightSum);
+
+    // Decision logic based on updated thresholds
+    if (centerSum > 5500 && leftSum < 3000 && rightSum < 1500) {
+        // Line is centered
+        Serial.println("Centered");
+        straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt());
+    } else if (leftSum > rightSum) {
+        // Line is leaning to the left
+        Serial.println("Left");
+        left_m.setSpeed(10);
+        right_m.setSpeed(20);
+    } else if (rightSum > leftSum) {
+        // Line is leaning to the right
+        Serial.println("Right");
+        left_m.setSpeed(20);
+        right_m.setSpeed(10);
+    } else {
+        // Default case (uncertain or lost line)
+        Serial.println("Lost line");
+        left_m.setSpeed(0);
+        right_m.setSpeed(0);
+    }
 }
+
+
+
 
 void turnOn(){
     // Print message for debugging
@@ -114,7 +123,7 @@ void turnRight(){
   right_m.directionForward();
 }
 
-void straightFeedback(uint32_t tickR, uint32_t tickL){
+void straightFeedback(uint32_t tickR, uint32_t tickL,int speed){
   left_m.enableMotor();
   right_m.enableMotor();
   left_m.directionForward();
@@ -123,7 +132,7 @@ void straightFeedback(uint32_t tickR, uint32_t tickL){
   int32_t diff = ((int32_t) tickL - (int32_t)tickR)/2;  //positive 
   const float Kp = 0.04; 
   float correct = Kp * diff;
-  float baseSpeed = 150; 
+  float baseSpeed = (float)speed; 
   const float deadband = 2.0;     // Deadband threshold to ignore minor errors
 
   float leftSpeed = baseSpeed - correct;
