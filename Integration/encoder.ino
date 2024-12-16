@@ -20,9 +20,9 @@ void updateLineFollower() {
     //readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor); //returns sensorCalVal
 
     // Calculate sums for decision-making
-    int centerSum = sensorVal[3] + sensorVal[4] + sensorVal[5];
+    int centerSum = sensorVal[3] + sensorVal[4];
     int leftSum = sensorVal[0] + sensorVal[1] + sensorVal[2];
-    int rightSum = sensorVal[6] + sensorVal[7];
+    int rightSum = sensorVal[5] + sensorVal[6] + sensorVal[7];
 
 //    // Debugging: Print the sums for verification
 //    Serial.print("CenterSum: ");
@@ -33,19 +33,23 @@ void updateLineFollower() {
 //    Serial.println(rightSum);
 
     // Decision logic based on updated thresholds
-    if (centerSum > 5500 && leftSum < 3000 && rightSum < 1500) {
+      resetLeftEncoderCnt();
+      resetRightEncoderCnt();
+    if (centerSum > 4000 && leftSum < 3000 && rightSum < 3000) {
         // Line is centered
 //        Serial.println("----------Centered");
+//        left_m.setSpeed(15);
+//        right_m.setSpeed(15);
         straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),14);
     } else if (leftSum > rightSum) {
         // Line is leaning to the left
 //        Serial.println("----------Left");
         left_m.setSpeed(10);
-        right_m.setSpeed(20);
+        right_m.setSpeed(15);
     } else if (rightSum > leftSum) {
         // Line is leaning to the right
 //        Serial.println("----------Right");
-        left_m.setSpeed(20);
+        left_m.setSpeed(15);
         right_m.setSpeed(10);
     } else {
         // Default case (uncertain or lost line)
@@ -86,7 +90,7 @@ void turnAround(){
   right_m.directionForward();
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
-  delay(3400);//prev 2060
+  delay(3300);//prev 2060
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
@@ -190,6 +194,12 @@ void backFeedback(uint32_t tickR, uint32_t tickL, int speed){
   left_m.setSpeed((int)leftSpeed);
   right_m.setSpeed((int)rightSpeed);
 
+}
+
+
+void straight() {
+  straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),14);
+  return;
 }
 
 

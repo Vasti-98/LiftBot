@@ -267,12 +267,7 @@ int counter = 0;
 void loop() {
   
   if (DEBUGGING) {
-    if (true) {
-      pickUpObject();
-      delay(3000);
-      dropUpObject();
-      delay(3000);
-    }
+    straight();
 
     /*
     Serial.println("start");
@@ -413,7 +408,7 @@ void loop() {
       //pickup sequence
       pickUpObject();
       delay(500);
-      Serial.println("PickedUp");
+      Serial.println("STATUS: PickedUp");
       currentState = handleStateTransition(currentState, PICKUP_FINISHED_EVENT);
       break;
     case DROPPING_STATE:
@@ -421,12 +416,12 @@ void loop() {
       dropUpObject();
       
       delay(500);//servo code in here  , delete delay afterwards
-      Serial.println("Dropped");
+      Serial.println("STATUS: Dropped");
       currentState = handleStateTransition(currentState, DROP_FINISHED_EVENT);
       break;
       
     case T90_LEFT_STATE:
-      Serial1.write("TURNING 90 LEFT");
+      Serial.println("STATUS: TURNING 90 LEFT");
       stopWheels();
       delay(50);
       turnLeft();
@@ -436,7 +431,7 @@ void loop() {
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
       break;
     case T90_RIGHT_STATE:
-      Serial1.write("TURNING 90 RIGHT");
+      Serial.println("STATUS: TURNING 90 RIGHT");
       stopWheels();
       delay(50);
       turnRight();
@@ -444,15 +439,17 @@ void loop() {
       turnOnSlow();
       delay(1500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
+      break;
     case T180_STATE:
-      Serial1.write("TURNING 180");
+      Serial.println("STATUS: TURNING 180");
       stopWheels();
       delay(50);
       turnAround();
       delay(50);
       turnOnSlow();
-      delay(1500);
+      delay(500);
       currentState = handleStateTransition(currentState, TURN_FINISHED_EVENT);
+      break;
     }
   }
 }
@@ -463,7 +460,7 @@ void pickUpObject() {
     servo_left.write(60);
     gripper.writeMicroseconds(500);//ensures right 
     delay(4000);
-    gripper.writeMicroseconds(900);
+    gripper.writeMicroseconds(1000);
     for (int pos = 60; pos < 91; pos += 1) {  // goes from 0 degrees to 70 in 1 degree steps
       servo_left.write(pos);              // tell servo to go to position in variable 'pos'
       delay(20);                       // waits 15ms for the servo to reach the position
@@ -474,13 +471,14 @@ void pickUpObject() {
 void dropUpObject() {
   servo_left.write(90);
   delay(1000);
-  gripper.writeMicroseconds(900);
+  gripper.writeMicroseconds(1000);
   for(int pos = 90; pos >=60;pos-=1)     // goes from 180 degrees to 0 degrees
   {
     servo_left.write(pos);              // tell servo to go to position in variable 'pos'
     delay(15);                       // waits 15ms for the servo to reach the position
   }
   gripper.writeMicroseconds(500);
-  
+  delay(1000);
+  servo_left.write(90);
   backPickUp();
 } 
