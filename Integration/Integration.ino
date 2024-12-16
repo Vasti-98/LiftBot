@@ -29,8 +29,7 @@ unsigned long previousTime = 0;
 //events
 #define BT_START_EVENT 52
 #define BT_STOP_EVENT 8
-#define LLINE_DETECTED_EVENT 9
-#define RLINE_DETECTED_EVENT 10
+#define LINE_DETECTED_EVENT 9
 #define RED_DETECTED_EVENT 11
 #define GREEN_DETECTED_EVENT 12
 #define BLUE_DETECTED_EVENT 13
@@ -86,11 +85,14 @@ int handleStateTransition(int inState, int event) {
       if ((event == RED_DETECTED_EVENT || event == BLUE_DETECTED_EVENT || event == GREEN_DETECTED_EVENT) && (currentTarget == UNSORTED_BIN && (pastHalf && returning))) { // color detected and expected pickup area
         lastTarget = UNSORTED_BIN;
         if (lastColor == 1) {//red
+          digitalWrite(RED_LED, HIGH);
           currentTarget = RED_BIN;
         } else if (lastColor == 2) { //green
           currentTarget = GREEN_BIN;
+          digitalWrite(GREEN_LED, HIGH);
         } else if (lastColor == 3) {//blue
           currentTarget = BLUE_BIN;
+          digitalWrite(BLUE_LED, HIGH);
         } else {
           break;
         }
@@ -101,106 +103,71 @@ int handleStateTransition(int inState, int event) {
       break;
       
     case DRIVING_STATE:
-    
-      if (event == LLINE_DETECTED_EVENT) { // Left line detected while driving
-        if ((currentTarget == UNSORTED_BIN && lastTarget == GREEN_BIN)&& returning) {
-          if (pastHalf) {
-            return IDLE_PICKUP_STATE; // Left side detected pickup line
-          } else {
+
+      if (event == LINE_DETECTED_EVENT) {
+        
+        //// RED BIN LOGIC
+        if ((currentTarget == RED_BIN) && (lastTarget == UNSORTED_BIN)) {  // unsorted going to red
+          if (!pastHalf) {      
             pastHalf = true;
-            return T90_LEFT_STATE; // Left turn going from green to unsorted
-          }
-        } else if ((currentTarget == RED_BIN && lastTarget == UNSORTED_BIN) && !returning){
-          if (pastHalf) {
-            return DROPPING_STATE; // Left side detected droppoff line
+            return T90_LEFT_STATE;
           } else {
-            pastHalf = true;
-            return T90_LEFT_STATE; // Left turn going from unsorted to red;
+            return DROPPING_STATE;
           }
-        } else if ((currentTarget == UNSORTED_BIN) && (returning && pastHalf)) { // left detected pickup line
-          return IDLE_PICKUP_STATE;
         }
-        //BLUE CODE: 
-        if (currentTarget == BLUE_BIN) {
-            if (pastHalf) {
-              return DROPPING_STATE;
-            } else {
-              pastHalf = true;
-              turnOnSlow();
-              delay(1000);
-              return DRIVING_STATE;
-            }
-        }
-        if (lastTarget == BLUE_BIN) {
-          if (pastHalf) {
+        if ((currentTarget == UNSORTED_BIN) && (lastTarget == RED_BIN)) {  // red returning to unsorted
+          if (!pastHalf) {      
+            pastHalf = true;
+            return T90_RIGHT_STATE;
+          } else {
             return IDLE_PICKUP_STATE;
+          }
+        }        
+
+        //// GREEN BIN LOGIC
+        if ((currentTarget == GREEN_BIN) && (lastTarget == UNSORTED_BIN)) {  // unsorted going to green
+          if (!pastHalf) {      
+            pastHalf = true;
+            return T90_RIGHT_STATE;
           } else {
+            return DROPPING_STATE;
+          }
+        }
+        if ((currentTarget == UNSORTED_BIN) && (lastTarget == GREEN_BIN)) {  // green returning to unsorted
+          if (!pastHalf) {      
+            pastHalf = true;
+            return T90_LEFT_STATE;
+          } else {
+            return IDLE_PICKUP_STATE;
+          }
+        }        
+
+
+        //// BLUE BIN LOGIC
+        if ((currentTarget == BLUE_BIN) && (lastTarget == UNSORTED_BIN)) {  // unsorted going to blue
+          if (!pastHalf) {      
             pastHalf = true;
             turnOnSlow();
             delay(1000);
             return DRIVING_STATE;
+          } else {
+            return DROPPING_STATE;
           }
         }
-
-      }
-      
-      if (event == RLINE_DETECTED_EVENT) { //Right line detected while driving
-        if ((currentTarget == UNSORTED_BIN && lastTarget == RED_BIN)&& returning) {
-          if (pastHalf) {
-            return IDLE_PICKUP_STATE; //right side detected pickup line
-            Serial.println("--------------error");
-          } else {
+        if ((currentTarget == UNSORTED_BIN) && (lastTarget == BLUE_BIN)) {  // blue returning to unsorted
+          if (!pastHalf) {      
             pastHalf = true;
-            return T90_RIGHT_STATE; // right turn going from red to unsorted
-          }
-        } else if ((currentTarget == GREEN_BIN && lastTarget == UNSORTED_BIN) && !returning){
-          if (pastHalf) {
-            lastTarget = currentTarget;
-            currentTarget = UNSORTED_BIN;
-            return DROPPING_STATE; // right side detected at droppoff line
+            turnOnSlow();
+            delay(1000);
+            return DRIVING_STATE;
           } else {
-            pastHalf = true;
-            return T90_RIGHT_STATE; // right turn going from unsorted to red;
-          }
-        } else if ((currentTarget == UNSORTED_BIN) && (returning && pastHalf)){
             return IDLE_PICKUP_STATE;
           }
-          if (currentTarget == BLUE_BIN) {
-              if (pastHalf) {
-                return DROPPING_STATE;
-              } else {
-                pastHalf = true;
-                turnOnSlow();
-                delay(1000);
-                return DRIVING_STATE;
-              }
-            }
-          if (lastTarget == BLUE_BIN) {
-            if (pastHalf) {
-              return IDLE_PICKUP_STATE;
-            } else {
-              pastHalf = true;
-              turnOnSlow();
-              delay(1000);
-              return DRIVING_STATE;
-            }
-          }
+        }            
       }
-      if ((event == RED_DETECTED_EVENT || event == BLUE_DETECTED_EVENT || event == GREEN_DETECTED_EVENT) && (currentTarget == UNSORTED_BIN && (pastHalf && returning))) { // color detected and expected pickup area
-        lastTarget = UNSORTED_BIN;
-        if (lastColor == 1) {//red
-          currentTarget = RED_BIN;
-        } else if (lastColor == 2) { //green
-          currentTarget = GREEN_BIN;
-        } else if (lastColor == 3) {//blue
-          currentTarget = BLUE_BIN;
-        } else {
-          break;
-        }
-        return PICKUP_STATE;
-      }
-      return inState;
       break;
+
+
       
     case T180_STATE:
       if (event == TURN_FINISHED_EVENT) {
@@ -230,6 +197,9 @@ int handleStateTransition(int inState, int event) {
         currentTarget = UNSORTED_BIN;
         pastHalf = false;
         returning = true;
+        digitalWrite(RED_LED, LOW);
+        digitalWrite(GREEN_LED, LOW);
+        digitalWrite(BLUE_LED, LOW);
         return T180_STATE;
       }
       break;
@@ -287,6 +257,9 @@ void setup() {
   
   servo_left.attach(6);
   gripper.attach(2); 
+  pinMode(RED_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+  pinMode(BLUE_LED, OUTPUT);
 }
 
 
@@ -370,8 +343,7 @@ void loop() {
 //    Serial.print(1);
     
     updateLineFollower();
-    lineUpdates = getLineUpdates();
-    if (lineUpdates == 1) {
+    if (checkLine()) {
       Serial1.write(lineUpdates);
       stopWheels();
       delay(300);
@@ -399,14 +371,14 @@ void loop() {
     }
 
 
-// bool btval = getBtOn(); //orignall truew
- bool btval = true;
+bool btval = getBtOn(); //orignall true
+
   if (!btval) { //check for bluetooth shutdown
     currentState = handleStateTransition(currentState, BT_STOP_EVENT);
     }
   switch(currentState) {
     case IDLE_STATE:
-      if (btval) {
+      if (btval){
         Serial.println("Bluetooth start command, moving to driving");
         currentState = handleStateTransition(currentState, BT_START_EVENT);
       }
@@ -426,28 +398,10 @@ void loop() {
       }
       break;
     case DRIVING_STATE:
-      
       updateLineFollower();
-      lineUpdates = getLineUpdates();
-      if (lineUpdates == 1) {
+      if (checkLine()) {
         stopWheels();
-//        delay(20);
-//        turnOnSlow();
-//        delay(300);
-//        stopWheels();        
-//        delay(3000);
-        currentState = handleStateTransition(currentState, LLINE_DETECTED_EVENT);
-      } else if (lineUpdates == 2) {
-        driveInit = false;
-        stopWheels();
-//        delay(20);
-//        turnOnSlow();
-//        delay(300);
-//        stopWheels();        
-//        delay(3000);
-        currentState = handleStateTransition(currentState, RLINE_DETECTED_EVENT);
-      } else {
-        
+        currentState = handleStateTransition(currentState, LINE_DETECTED_EVENT);
       }
       break;
     case PICKUP_STATE:

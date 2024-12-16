@@ -1,5 +1,7 @@
 #include "encoder.h"
 
+#define TURNDELAY 1000
+
 void setupEncoder(){
   // Initialize serial for debugging
   /**to find certain pins look at RSLK_PIN*/
@@ -40,16 +42,16 @@ void updateLineFollower() {
 //        Serial.println("----------Centered");
 //        left_m.setSpeed(15);
 //        right_m.setSpeed(15);
-        straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),12);
+        straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),14);
     } else if (leftSum > rightSum) {
         // Line is leaning to the left
 //        Serial.println("----------Left");
         left_m.setSpeed(10);
-        right_m.setSpeed(13);
+        right_m.setSpeed(15);
     } else if (rightSum > leftSum) {
         // Line is leaning to the right
 //        Serial.println("----------Right");
-        left_m.setSpeed(13);
+        left_m.setSpeed(15);
         right_m.setSpeed(10);
     } else {
         // Default case (uncertain or lost line)
@@ -91,11 +93,11 @@ void turnAround(){
 
   delay(1500);//prev 2060
   readLineSensor(sensorVal);
-  while ((sensorVal[3] < 2000) && (sensorVal[5] < 2000)) {
+  while ((sensorVal[3] < 2000) && (sensorVal[4] < 2000)) {
      Serial.println("TURNING");
      readLineSensor(sensorVal);
   }
-  
+  delay(250);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
@@ -104,7 +106,7 @@ void turnAround(){
 void backPickUp(){ //after sensing the color, it backs up a bit to pick up the ball
   resetLeftEncoderCnt();
   resetRightEncoderCnt();
-  backFeedback(getEncoderRightCnt(),getEncoderLeftCnt(),20);
+  backFeedback(getEncoderRightCnt(),getEncoderLeftCnt(),13);
   delay(500);
   left_m.setSpeed(0); 
   right_m.setSpeed(0);  
@@ -116,11 +118,13 @@ void turnLeft(){
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
   
-  delay(1000);
-  readLineSensor(sensorVal);
-  while (sensorVal[5] < 2000) {
-      readLineSensor(sensorVal);
-  }
+  delay(TURNDELAY);
+
+
+//  readLineSensor(sensorVal);
+//  while (sensorVal[5] < 2000) {
+//      readLineSensor(sensorVal);
+//  }
   left_m.setSpeed(0); 
   right_m.setSpeed(0);
   left_m.directionForward();
@@ -132,11 +136,12 @@ void turnRight(){
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
   
-  delay(1000);
-  readLineSensor(sensorVal);
-  while (sensorVal[2] < 2000) {
-      readLineSensor(sensorVal);
-  } 
+  delay(TURNDELAY);
+  
+//  readLineSensor(sensorVal);
+//  while (sensorVal[3] < 2000) {
+//      readLineSensor(sensorVal);
+//  } 
   
   left_m.setSpeed(0); 
   right_m.setSpeed(0);

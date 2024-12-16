@@ -34,7 +34,7 @@ void floorCalibration() {
   Serial.println("Reading floor values complete");
 }
 
-int getLineUpdates() {
+bool checkLine() {  // true if line detected
     readLineSensor(sensorVal);
     readCalLineSensor(sensorVal, sensorCalVal, sensorMinVal, sensorMaxVal, lineColor);
     if (false) {
@@ -44,14 +44,10 @@ int getLineUpdates() {
       }
       Serial.println();
     }
-    if (sensorVal[7] > 2000) {
-      return 2; //right most sensor dark
+    if (((sensorVal[0] > 2100) || (sensorVal[1] > 2100)) && ((sensorVal[6] > 2100) || (sensorVal[7] > 2100))) {
+      return true;
     }
-    if (sensorVal[0] > 2000) {
-      return 1; //left most sensor dark
-    }
-    return 0;
-
+    return false;
 }
 
 
