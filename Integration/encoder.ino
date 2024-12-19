@@ -1,6 +1,6 @@
 #include "encoder.h"
 
-#define TURNDELAY 1000
+#define TURNDELAY 600
 
 void setupEncoder(){
   // Initialize serial for debugging
@@ -37,22 +37,22 @@ void updateLineFollower() {
     // Decision logic based on updated thresholds
       resetLeftEncoderCnt();
       resetRightEncoderCnt();
-    if (centerSum > 4000 && leftSum < 3000 && rightSum < 3000) {
+    if (centerSum > 3200 && leftSum < 2400 && rightSum < 2400) {
         // Line is centered
 //        Serial.println("----------Centered");
-//        left_m.setSpeed(15);
-//        right_m.setSpeed(15);
-        straightFeedback(getEncoderRightCnt(), getEncoderLeftCnt(),14);
+        left_m.setSpeed(15);
+        right_m.setSpeed(15);
+
     } else if (leftSum > rightSum) {
         // Line is leaning to the left
 //        Serial.println("----------Left");
-        left_m.setSpeed(10);
-        right_m.setSpeed(15);
+        left_m.setSpeed(0);
+        right_m.setSpeed(10);
     } else if (rightSum > leftSum) {
         // Line is leaning to the right
 //        Serial.println("----------Right");
-        left_m.setSpeed(15);
-        right_m.setSpeed(10);
+        left_m.setSpeed(10);
+        right_m.setSpeed(0);
     } else {
         // Default case (uncertain or lost line)
         Serial.println("----------Lost line---------");
@@ -91,7 +91,7 @@ void turnAround(){
   left_m.setSpeed(15); 
   right_m.setSpeed(15);
 
-  delay(1500);//prev 2060
+  delay(1.5*TURNDELAY);//prev 2060
   readLineSensor(sensorVal);
   while ((sensorVal[3] < 2000) && (sensorVal[4] < 2000)) {
      Serial.println("TURNING");

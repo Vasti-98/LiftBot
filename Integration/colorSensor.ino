@@ -111,7 +111,7 @@ int getColor(){
   int g;
   int b;
   int classify = maxDelta(Cr, Cg, Cb);
-  if (true) {
+  if (false) {
     Serial.println("RGB");
     Serial.print(Cr);
     Serial.print(" ");
@@ -136,7 +136,7 @@ int getColor(){
     return 0;
   }}
 
-const int delta = 25000;
+const int delta = 20000;
   int maxDelta(int rF, int gF, int bF) {
 
   if ((abs(rF - gF) > delta) || (abs(rF-bF) > delta) || (abs(bF-gF) > delta)) {

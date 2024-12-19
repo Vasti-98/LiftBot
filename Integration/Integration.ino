@@ -14,8 +14,8 @@ unsigned long previousTime = 0;
  */
 
 #define DEBUGGING false
-#define DEMO false
-
+#define DEMO_DEBUG false
+char buff[50];
 //states
 #define IDLE_STATE 0
 #define DRIVING_STATE 1
@@ -209,40 +209,41 @@ int handleStateTransition(int inState, int event) {
 void printState(int state, bool vars) {
   switch (state) {
     case IDLE_STATE:
-      Serial.println("----STATE----: Idle State");
+      Serial1.write("----STATE----: Idle State");
       break;
     case DRIVING_STATE:
-      Serial.println("----STATE----: Driving State");
+      Serial1.write("----STATE----: Driving State");
       break;
     case PICKUP_STATE:
-      Serial.println("----STATE----: Pickup State");
+      Serial1.write("----STATE----: Pickup State");
       break;
     case T90_LEFT_STATE:
-      Serial.println("----STATE----: Turn Left State");
+      Serial1.write("----STATE----: Turn Left State");
       break;
     case T90_RIGHT_STATE:
-      Serial.println("----STATE----: Turn Right State");
+      Serial1.write("----STATE----: Turn Right State");
       break;
     case DROPPING_STATE:
-      Serial.println("----STATE----: Dropping State");
+      Serial1.write("----STATE----: Dropping State");
       break;
     case T180_STATE:
-      Serial.println("----STATE----: Turn Around State");
+      Serial1.write("----STATE----: Turn Around State");
       break;    
     case IDLE_PICKUP_STATE:
-      Serial.println("----STATE----: Idle Pickup State");
+      Serial1.write("----STATE----: Idle Pickup State");
       break;
       }
       if (vars) {
-        Serial.print("Past half = ");
-        Serial.println(pastHalf);
-        Serial.print("Returning = ");
-        Serial.println(returning);
-        Serial.print("Last target = ");
-        Serial.println(lastTarget);
-        Serial.print("Current target = ");
-        Serial.println(currentTarget);
-        Serial.println();
+        //Serial1.write("Past half = ");
+        Serial1.write(pastHalf);
+        if (pastHalf) {
+        Serial1.write("true");
+        } else {
+        Serial1.write("false");
+        }
+        //Serial1.write("Returning = ");
+      
+
       }
 }
 
@@ -270,10 +271,10 @@ int mil;
 int tcolor;
 int counter = 0;
 void loop() {
-  
+bool btval;
   if (DEBUGGING) {
-    straight();
-
+    tcolor = getColor();
+    Serial.println(tcolor);
     /*
     Serial.println("start");
     currentState = handleStateTransition(currentState, BT_START_EVENT);
@@ -339,7 +340,7 @@ void loop() {
     Serial.println("end");
     delay(2000);
     */
-  } else if (DEMO) {
+  } else if (DEMO_DEBUG) {
 //    Serial.print(1);
     
     updateLineFollower();
@@ -371,18 +372,21 @@ void loop() {
     }
 
 
-bool btval = getBtOn(); //orignall true
-
+btval = getBtOn(); //orignall true
+Serial.println(btval);
   if (!btval) { //check for bluetooth shutdown
     currentState = handleStateTransition(currentState, BT_STOP_EVENT);
     }
   switch(currentState) {
     case IDLE_STATE:
+   gripper.writeMicroseconds(500);
+    stopWheels();
       if (btval){
         Serial.println("Bluetooth start command, moving to driving");
         currentState = handleStateTransition(currentState, BT_START_EVENT);
       }
     case IDLE_PICKUP_STATE:
+      stopWheels();
       tcolor = getColorSamples();
       lastColor = tcolor;
       switch (tcolor) {
@@ -459,7 +463,7 @@ void pickUpObject() {
     servo_left.write(60);
     gripper.writeMicroseconds(500);//ensures right 
     delay(4000);
-    gripper.writeMicroseconds(1000);
+    gripper.writeMicroseconds(950);
     for (int pos = 60; pos < 91; pos += 1) {  // goes from 0 degrees to 70 in 1 degree steps
       servo_left.write(pos);              // tell servo to go to position in variable 'pos'
       delay(20);                       // waits 15ms for the servo to reach the position
@@ -470,7 +474,7 @@ void pickUpObject() {
 void dropUpObject() {
   servo_left.write(90);
   delay(1000);
-  gripper.writeMicroseconds(1000);
+  gripper.writeMicroseconds(950);
   for(int pos = 90; pos >=60;pos-=1)     // goes from 180 degrees to 0 degrees
   {
     servo_left.write(pos);              // tell servo to go to position in variable 'pos'
